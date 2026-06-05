@@ -1,0 +1,1177 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EQUILÍBRIO</title>
+  <style>
+    :root {
+      --primary: #1D9E75;
+      --primary-light: #4FBF9B;
+      --primary-dark: #0F6E56;
+      --secondary: #C9A0D0;
+      --accent: #F2CB65;
+      --text: #333333;
+      --text-muted: #666666;
+      --title: #1D9E75;
+      --background: #DCF0F2;
+      --surface: #FFFFFF;
+      --shadow-soft: 0 4px 32px rgba(0, 0, 0, 0.07);
+      --radius-pill: 50px;
+      --tr: 300ms ease;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      background: var(--surface);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    a {
+      transition: color var(--tr), border-color var(--tr), background-color var(--tr), transform var(--tr), box-shadow var(--tr);
+    }
+
+    .navbar {
+      background: var(--surface);
+      box-shadow: 0 2px 18px rgba(0, 0, 0, 0.06);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .navbar-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 24px;
+      height: 70px;
+      max-width: 1180px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .navbar-logo a {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--primary);
+      text-decoration: none;
+      letter-spacing: 0;
+    }
+
+    .navbar-toggle {
+      display: none;
+      border: none;
+      background: transparent;
+      color: var(--text);
+      font-size: 24px;
+      cursor: pointer;
+      padding: 8px;
+    }
+
+    .navbar-nav {
+      display: flex;
+    }
+
+    .nav-list {
+      display: flex;
+      align-items: center;
+      list-style: none;
+      gap: 32px;
+      margin: 0;
+      padding: 0;
+    }
+
+    .nav-link {
+      text-decoration: none;
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 500;
+      padding-bottom: 2px;
+      border-bottom: 2px solid transparent;
+    }
+
+    .nav-link:hover {
+      color: var(--primary);
+    }
+
+    .nav-link-active {
+      color: var(--primary);
+      font-weight: 700;
+      border-bottom-color: var(--primary);
+    }
+
+    .nav-link-active:hover {
+      color: var(--primary-dark);
+      border-bottom-color: var(--primary-dark);
+    }
+
+    .hero {
+      background: var(--background);
+      min-height: 600px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 120px 24px;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    .hero-content {
+      width: 100%;
+      max-width: 720px;
+      margin: 0 auto;
+    }
+
+    .hero h1 {
+      margin: 0 0 24px;
+      font-size: 64px;
+      line-height: 1.1;
+      color: var(--primary);
+      font-weight: 800;
+      letter-spacing: 0;
+      animation: fadeInDown 800ms ease-out;
+    }
+
+    .hero-subtitle {
+      max-width: 680px;
+      margin: 0 auto 40px;
+      font-size: 18px;
+      line-height: 1.6;
+      color: var(--text);
+      font-weight: 400;
+      animation: fadeInUp 800ms ease-out 200ms both;
+    }
+
+    .hero-actions {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      animation: fadeInUp 800ms ease-out 400ms both;
+    }
+
+    .btn {
+      border: none;
+      outline: none;
+      cursor: pointer;
+      transition: background-color var(--tr), color var(--tr), transform var(--tr), box-shadow var(--tr);
+      font-family: inherit;
+      text-decoration: none;
+      border-radius: var(--radius-pill);
+      font-weight: 700;
+      font-size: 15px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.55rem;
+      padding: 14px 32px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn:focus-visible {
+      box-shadow: 0 0 0 3px rgba(29, 158, 117, 0.2);
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #FFFFFF;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(29, 158, 117, 0.3);
+    }
+
+    .btn-secondary {
+      background: var(--accent);
+      color: #333333;
+    }
+
+    .btn-secondary:hover {
+      background: #EEC44F;
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(242, 203, 101, 0.32);
+    }
+
+    .section {
+      padding: 100px 24px;
+    }
+
+    .section-surface,
+    .about,
+    .fundamentacao {
+      background: var(--surface);
+    }
+
+    .section-background,
+    .objectives {
+      background: var(--background);
+    }
+
+    .section-container {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .section-header {
+      text-align: center;
+      max-width: 760px;
+      margin: 0 auto 60px;
+    }
+
+    .section-header h2,
+    .section h2 {
+      margin: 0 0 12px;
+      text-align: center;
+      font-size: 42px;
+      line-height: 1.2;
+      color: var(--primary);
+      font-weight: 800;
+    }
+
+    .section-description {
+      margin: 0;
+      font-size: 16px;
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+
+    .section p {
+      margin: 0 0 16px;
+      font-size: 15px;
+      line-height: 1.8;
+      color: var(--text);
+    }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 28px;
+    }
+
+    .about-card {
+      background: var(--background);
+      padding: 32px;
+      border-radius: 14px;
+      box-shadow: var(--shadow-soft);
+      text-align: center;
+      transition: transform var(--tr), box-shadow var(--tr);
+    }
+
+    .about-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 8px 24px rgba(29, 158, 117, 0.15);
+    }
+
+    .about-card-icon {
+      display: block;
+      font-size: 44px;
+      line-height: 1;
+      margin-bottom: 18px;
+    }
+
+    .about-card h3 {
+      margin: 0 0 12px;
+      font-size: 18px;
+      color: var(--primary);
+      font-weight: 800;
+    }
+
+    .about-card p {
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.7;
+      color: var(--text);
+    }
+
+    .objective-general {
+      background: var(--surface);
+      border-left: 4px solid var(--primary);
+      border-radius: 12px;
+      padding: 32px;
+      box-shadow: var(--shadow-soft);
+      margin-bottom: 48px;
+    }
+
+    .objective-general h3 {
+      margin: 0 0 12px;
+      color: var(--primary);
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    .objective-general p {
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.7;
+    }
+
+    .objectives-list {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 28px;
+    }
+
+    .objective-card {
+      background: var(--surface);
+      border-radius: 14px;
+      padding: 34px 32px 32px;
+      box-shadow: var(--shadow-soft);
+      border-top: 3px solid var(--primary);
+      position: relative;
+      transition: transform var(--tr), box-shadow var(--tr);
+    }
+
+    .objective-card::before {
+      content: attr(data-number);
+      position: absolute;
+      top: -18px;
+      left: 24px;
+      width: 38px;
+      height: 38px;
+      background: var(--primary);
+      color: #FFFFFF;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 18px;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .objective-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 8px 24px rgba(29, 158, 117, 0.15);
+    }
+
+    .objective-card h3 {
+      margin: 10px 0 12px;
+      color: var(--primary);
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    .objective-card p {
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .fundamentacao-content {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 48px;
+      align-items: start;
+    }
+
+    .fundamentacao-text,
+    .ods-section {
+      background: #F7F7F7;
+      border-radius: 14px;
+      padding: 32px;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .fundamentacao-text h3,
+    .ods-section h3 {
+      margin: 0 0 18px;
+      color: var(--primary);
+      font-size: 24px;
+      font-weight: 800;
+    }
+
+    .fundamentacao-text p {
+      font-size: 15px;
+      line-height: 1.8;
+    }
+
+    .fundamentacao-text p:last-child {
+      margin-bottom: 0;
+    }
+
+    .fundamentacao-studies-block {
+      background: var(--background);
+      padding: 32px;
+      border-radius: 12px;
+      box-shadow: var(--shadow-soft);
+      margin-top: 48px;
+    }
+
+    .fundamentacao-studies-block h3 {
+      margin: 0 0 20px;
+      color: var(--primary);
+      font-size: 20px;
+      font-weight: 800;
+    }
+
+    .fundamentacao-studies-block p {
+      margin: 0 0 16px;
+      font-size: 14px;
+      color: var(--text);
+      line-height: 1.7;
+      font-weight: 400;
+    }
+
+    .fundamentacao-studies-block p:last-child {
+      margin-bottom: 0;
+    }
+
+    .ods-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .ods-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px;
+      background: var(--surface);
+      border-radius: 12px;
+      box-shadow: 0 3px 18px rgba(0, 0, 0, 0.05);
+    }
+
+    .ods-number {
+      width: 48px;
+      height: 48px;
+      background: var(--primary);
+      color: #FFFFFF;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .ods-item p {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.4;
+      color: var(--text);
+    }
+
+    .cta-section {
+      background: var(--primary);
+      color: #FFFFFF;
+      text-align: center;
+      padding: 100px 24px;
+    }
+
+    .cta-section h2 {
+      margin: 0 0 16px;
+      font-size: 42px;
+      line-height: 1.2;
+      font-weight: 800;
+      color: #FFFFFF;
+    }
+
+    .cta-section p {
+      margin: 0 0 40px;
+      font-size: 16px;
+      line-height: 1.6;
+      color: rgba(255, 255, 255, 0.95);
+    }
+
+    .cta-container {
+      max-width: 700px;
+    }
+
+    .cta-section .btn {
+      background: var(--secondary);
+      color: #FFFFFF;
+      padding: 16px 48px;
+      font-size: 16px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    .cta-section .btn:hover {
+      background: #B085B0;
+      transform: translateY(-3px);
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.28);
+    }
+
+    .footer {
+      background: #2C3E50;
+      color: #FFFFFF;
+      padding: 48px 24px 24px;
+    }
+
+    .footer-content {
+      max-width: 1100px;
+      margin: 0 auto 32px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 32px;
+    }
+
+    .footer-section h3 {
+      margin: 0 0 12px;
+      color: var(--primary-light);
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    .footer-section p {
+      margin: 0;
+      color: rgba(255, 255, 255, 0.82);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .footer-section ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .footer-section li {
+      margin-bottom: 8px;
+    }
+
+    .footer-section a {
+      color: rgba(255, 255, 255, 0.82);
+      text-decoration: none;
+      font-size: 13px;
+    }
+
+    .footer-section a:hover {
+      color: var(--primary-light);
+    }
+
+    .footer-bottom {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding-top: 24px;
+      border-top: 1px solid rgba(255, 255, 255, 0.12);
+      text-align: center;
+      color: rgba(255, 255, 255, 0.72);
+      font-size: 12px;
+    }
+
+    .footer-bottom p {
+      margin: 0;
+    }
+
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-30px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .navbar-container {
+        height: 60px;
+        padding: 0 16px;
+      }
+
+      .navbar-logo a {
+        font-size: 18px;
+      }
+
+      .navbar-toggle {
+        display: inline-flex;
+        margin-left: auto;
+      }
+
+      .nav-list {
+        gap: 16px;
+        flex-direction: column;
+        align-items: stretch;
+        position: absolute;
+        top: 60px;
+        right: 16px;
+        background: var(--surface);
+        padding: 16px;
+        border-radius: 12px;
+        box-shadow: var(--shadow-soft);
+        display: none;
+        min-width: 190px;
+      }
+
+      .nav-list.active {
+        display: flex;
+      }
+
+      .nav-link {
+        display: block;
+        font-size: 13px;
+        padding: 8px 4px;
+      }
+
+      .hero {
+        min-height: auto;
+        padding: 60px 20px 80px;
+      }
+
+      .hero h1 {
+        font-size: 36px;
+        margin-bottom: 16px;
+        line-height: 1.2;
+      }
+
+      .hero-subtitle {
+        font-size: 15px;
+        line-height: 1.5;
+        margin-bottom: 28px;
+      }
+
+      .hero-actions {
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .btn {
+        width: 100%;
+        min-height: 44px;
+        padding: 12px 24px;
+        border-radius: 40px;
+        font-size: 14px;
+      }
+
+      .section {
+        padding: 60px 20px;
+      }
+
+      .section-header {
+        margin-bottom: 40px;
+      }
+
+      .section-header h2,
+      .section h2,
+      .cta-section h2 {
+        font-size: 28px;
+      }
+
+      .about-grid,
+      .objectives-list,
+      .fundamentacao-content,
+      .footer-content {
+        grid-template-columns: 1fr;
+      }
+
+      .about-grid,
+      .objectives-list {
+        gap: 20px;
+      }
+
+      .about-card {
+        padding: 24px;
+      }
+
+      .about-card-icon {
+        font-size: 40px;
+        margin-bottom: 12px;
+      }
+
+      .about-card h3 {
+        font-size: 16px;
+        margin-bottom: 10px;
+      }
+
+      .about-card p {
+        font-size: 13px;
+        line-height: 1.6;
+      }
+
+      .objective-general {
+        padding: 20px;
+        margin-bottom: 32px;
+      }
+
+      .objective-general h3 {
+        font-size: 16px;
+        margin-bottom: 10px;
+      }
+
+      .objective-general p {
+        font-size: 13px;
+        line-height: 1.6;
+      }
+
+      .objective-card {
+        padding: 24px 20px 20px;
+      }
+
+      .objective-card::before {
+        width: 32px;
+        height: 32px;
+        top: -14px;
+        left: 16px;
+        font-size: 16px;
+      }
+
+      .objective-card h3 {
+        font-size: 15px;
+        margin: 4px 0 8px;
+      }
+
+      .objective-card p {
+        font-size: 12px;
+        line-height: 1.6;
+      }
+
+      .fundamentacao-text h3,
+      .ods-section h3 {
+        font-size: 18px;
+        margin-bottom: 12px;
+      }
+
+      .fundamentacao-text p {
+        font-size: 13px;
+        line-height: 1.6;
+        margin-bottom: 16px;
+      }
+
+      .ods-grid {
+        gap: 12px;
+      }
+
+      .ods-item {
+        padding: 12px;
+        gap: 12px;
+      }
+
+      .ods-number {
+        width: 40px;
+        height: 40px;
+        font-size: 16px;
+      }
+
+      .cta-section {
+        padding: 60px 20px;
+      }
+
+      .cta-section h2 {
+        margin-bottom: 12px;
+      }
+
+      .cta-section p {
+        font-size: 14px;
+        margin-bottom: 32px;
+      }
+
+      .cta-section .btn {
+        width: 100%;
+        min-height: 44px;
+        padding: 12px 24px;
+        font-size: 14px;
+      }
+
+      .footer {
+        padding: 32px 16px 16px;
+      }
+
+      .footer-content {
+        gap: 24px;
+        margin-bottom: 24px;
+      }
+
+      .footer-section h3 {
+        font-size: 14px;
+        margin-bottom: 10px;
+      }
+
+      .footer-section p,
+      .footer-section a {
+        font-size: 12px;
+      }
+
+      .footer-bottom {
+        padding-top: 16px;
+        font-size: 12px;
+      }
+
+      .fundamentacao-studies-block {
+        padding: 20px;
+        margin-top: 32px;
+      }
+
+      .fundamentacao-studies-block h3 {
+        font-size: 16px;
+        margin-bottom: 14px;
+      }
+
+      .fundamentacao-studies-block p {
+        font-size: 12px;
+        line-height: 1.6;
+        margin-bottom: 12px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .navbar-container {
+        height: 56px;
+        padding: 0 12px;
+      }
+
+      .navbar-logo a {
+        font-size: 16px;
+      }
+
+      .nav-list {
+        top: 56px;
+        right: 12px;
+        min-width: 170px;
+        gap: 12px;
+      }
+
+      .nav-link {
+        font-size: 12px;
+        padding: 6px 0;
+      }
+
+      .hero {
+        padding: 40px 16px 60px;
+      }
+
+      .hero h1 {
+        font-size: 28px;
+        margin-bottom: 12px;
+      }
+
+      .hero-subtitle {
+        font-size: 14px;
+        margin-bottom: 24px;
+      }
+
+      .hero-actions {
+        gap: 10px;
+      }
+
+      .section {
+        padding: 40px 16px;
+      }
+
+      .section-header {
+        margin-bottom: 28px;
+      }
+
+      .section-header h2,
+      .section h2 {
+        font-size: 24px;
+      }
+
+      .section-description {
+        font-size: 14px;
+      }
+
+      .about-card,
+      .objective-general,
+      .objective-card,
+      .fundamentacao-text,
+      .ods-section,
+      .fundamentacao-studies-block {
+        padding: 16px;
+      }
+
+      .about-card-icon {
+        font-size: 36px;
+        margin-bottom: 10px;
+      }
+
+      .about-card h3 {
+        font-size: 15px;
+      }
+
+      .about-card p,
+      .objective-general p,
+      .fundamentacao-text p {
+        font-size: 12px;
+      }
+
+      .objective-general {
+        margin-bottom: 28px;
+      }
+
+      .objectives-list {
+        gap: 16px;
+      }
+
+      .objective-card {
+        padding-top: 20px;
+      }
+
+      .objective-card::before {
+        width: 28px;
+        height: 28px;
+        font-size: 14px;
+      }
+
+      .fundamentacao-content {
+        gap: 24px;
+      }
+
+      .fundamentacao-studies-block {
+        margin-top: 20px;
+      }
+
+      .fundamentacao-studies-block h3 {
+        font-size: 15px;
+        margin-bottom: 10px;
+      }
+
+      .fundamentacao-studies-block p {
+        font-size: 12px;
+        margin-bottom: 10px;
+      }
+
+      .cta-section {
+        padding: 40px 16px;
+      }
+
+      .cta-section h2 {
+        font-size: 22px;
+        margin-bottom: 10px;
+      }
+
+      .cta-section p {
+        font-size: 13px;
+        margin-bottom: 24px;
+      }
+
+      .footer {
+        padding: 24px 12px 12px;
+      }
+
+      .footer-content {
+        gap: 20px;
+      }
+
+      .footer-section h3 {
+        font-size: 13px;
+      }
+
+      .footer-section p,
+      .footer-section a {
+        font-size: 12px;
+      }
+    }
+
+    @media (max-width: 320px) {
+      .hero h1 {
+        font-size: 26px;
+      }
+
+      .section {
+        padding-left: 12px;
+        padding-right: 12px;
+      }
+
+      .btn {
+        padding-left: 18px;
+        padding-right: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="navbar">
+    <div class="navbar-container">
+      <div class="navbar-logo">
+        <a href="index.html">EQUILÍBRIO</a>
+      </div>
+      <button class="navbar-toggle" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="navList">☰</button>
+      <nav class="navbar-nav" aria-label="Navegação principal">
+        <ul id="navList" class="nav-list">
+          <li><a href="index.html" class="nav-link nav-link-active">Início</a></li>
+          <li><a href="jogar.html" class="nav-link">Jogar</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-content">
+        <h1>EQUILÍBRIO</h1>
+        <p class="hero-subtitle">Ferramenta psicoeducativa para reflexão sobre o impacto das escolhas cotidianas na saúde mental</p>
+        <div class="hero-actions">
+          <a href="jogar.html" class="btn btn-primary">Começar Jornada</a>
+          <a href="#sobre" class="btn btn-secondary">Saiba Mais</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-surface about" id="sobre">
+      <div class="section-container">
+        <div class="section-header">
+          <h2>Sobre o Projeto</h2>
+          <p class="section-description">Entenda por que EQUILÍBRIO foi criado e como pode ajudar você</p>
+        </div>
+
+        <div class="about-grid">
+          <article class="about-card">
+            <span class="about-card-icon" aria-hidden="true">🧠</span>
+            <h3>Saúde Mental em Foco</h3>
+            <p>Seu bem estar emocional, cognitivo e social define a qualidade de sua vida. A capacidade de lidar com pressões diárias, trabalhar de forma produtiva e contribuir na sociedade está diretamente ligada à saúde mental. Pesquisas mostram que transtornos mentais aumentaram significativamente entre jovens em idade escolar.</p>
+          </article>
+          <article class="about-card">
+            <span class="about-card-icon" aria-hidden="true">🎓</span>
+            <h3>Desafios Educacionais</h3>
+            <p>Na escola, você enfrenta múltiplos desafios: pressão por notas, conflitos com colegas, incertezas sobre o futuro e expectativas externas. Esses fatores geram ansiedade, estresse e afetam diretamente seu desempenho e bem estar no ambiente escolar.</p>
+          </article>
+          <article class="about-card">
+            <span class="about-card-icon" aria-hidden="true">💡</span>
+            <h3>Educação Emocional</h3>
+            <p>Desenvolver habilidades para reconhecer, compreender e lidar com suas emoções é fundamental. Programas que trabalham competências emocionais têm demonstrado melhorar significativamente o comportamento, desempenho acadêmico e saúde mental de estudantes.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-background objectives" id="objetivos">
+      <div class="section-container">
+        <div class="section-header">
+          <h2>Objetivos</h2>
+          <p class="section-description">Uma experiência interativa para transformar escolhas em reflexão prática</p>
+        </div>
+
+        <div class="objective-general">
+          <h3>Objetivo Geral</h3>
+          <p>Criar uma plataforma de aprendizado lúdico que promova reflexão profunda sobre como suas escolhas diárias afetam sua saúde mental, usando indicadores científicos fundamentados em protocolos da psicologia.</p>
+        </div>
+
+        <div class="objectives-list">
+          <article class="objective-card" data-number="1">
+            <h3>Simular Situações</h3>
+            <p>Apresentar situações reais do seu cotidiano onde você vivencie as consequências de diferentes tipos de resposta e decisão em cada contexto.</p>
+          </article>
+          <article class="objective-card" data-number="2">
+            <h3>Fornecer Feedbacks</h3>
+            <p>Oferecer devoluções psicoeducativas personalizadas após cada escolha, explicando o impacto daquela decisão em sua saúde mental e bem estar geral.</p>
+          </article>
+          <article class="objective-card" data-number="3">
+            <h3>Apresentar Relatório</h3>
+            <p>Gerar um relatório individualizado ao final da jornada que identifica seus padrões comportamentais predominantes e oferece reflexões práticas para melhorar.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-surface fundamentacao" id="fundamentacao">
+      <div class="section-container">
+        <div class="section-header">
+          <h2>Fundamentação Teórica</h2>
+          <p class="section-description">Alicerçado em pesquisa científica e objetivos globais</p>
+        </div>
+
+        <div class="fundamentacao-content">
+          <div class="fundamentacao-text">
+            <h3>Por que EQUILÍBRIO?</h3>
+            <p>A saúde mental entre jovens é uma questão crítica de saúde pública e educacional. Um em cada sete adolescentes enfrenta algum tipo de transtorno mental, evidenciando a urgência de soluções que promovam bem estar emocional nessa fase da vida.</p>
+            <p>Embora a escola seja um espaço fundamental para desenvolvimento integral, a abordagem da saúde mental ainda é limitada e pouco sistematizada. Faltam metodologias práticas que engajem verdadeiramente os alunos nesse tipo de aprendizado.</p>
+            <p>Jogos e gamificação emergiram como abordagens inovadoras e eficazes. Pesquisas comprovam que a gamificação potencializa o envolvimento, a motivação e participação ativa de estudantes, tornando o aprendizado mais dinâmico e significativo.</p>
+          </div>
+
+          <div class="ods-section">
+            <h3>Alinhado com ODS</h3>
+            <div class="ods-grid">
+              <div class="ods-item">
+                <div class="ods-number">3</div>
+                <p>Saúde e Bem estar</p>
+              </div>
+              <div class="ods-item">
+                <div class="ods-number">4</div>
+                <p>Educação de Qualidade</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="fundamentacao-studies-block">
+          <h3>Estudos Fundamentais</h3>
+          <p>O EQUILÍBRIO se baseia na Terapia Cognitivo Comportamental (TCC), uma abordagem científica que identifica e modifica padrões de pensamento e comportamento. Pesquisas de Beck e Dobson demonstram sua eficácia na reestruturação de crenças desadaptativas.</p>
+          <p>Estudos sobre gamificação (Hamari et al.) comprovam que jogos educativos aumentam engajamento e motivação. Pesquisas de Durlak mostram que programas de educação socioemocional melhoram comportamento e saúde mental. James Paul Gee destaca como jogos favorecem pensamento crítico e tomada de decisão.</p>
+          <p>Esses pilares teóricos convergem para transformar reflexão sobre saúde mental em uma experiência prática, interativa e acessível.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section cta-section">
+      <div class="section-container cta-container">
+        <h2>Pronto para começar sua jornada?</h2>
+        <p>Explore como suas escolhas impactam sua saúde mental de forma lúdica e interativa.</p>
+        <a href="jogar.html" class="btn btn-primary btn-large">Iniciar Jornada</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-section">
+        <h3>EQUILÍBRIO</h3>
+        <p>Ferramenta psicoeducativa para reflexão sobre saúde mental e desenvolvimento de autoconsciência emocional.</p>
+      </div>
+      <div class="footer-section">
+        <h3>Projeto</h3>
+        <ul>
+          <li><a href="index.html">Inicio</a></li>
+          <li><a href="jogar.html">Jogar</a></li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h3>Instituição</h3>
+        <p>Colégio Estadual de Tempo Integral Antônio Batista</p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2026 EQUILÍBRIO. Todos os direitos reservados.</p>
+    </div>
+  </footer>
+
+  <script>
+    const toggle = document.querySelector(".navbar-toggle");
+    const navList = document.querySelector(".nav-list");
+
+    toggle.addEventListener("click", () => {
+      const isOpen = navList.classList.toggle("active");
+      toggle.setAttribute("aria-expanded", String(isOpen));
+    });
+
+    navList.querySelectorAll("a").forEach((link) => {
+      link.addEventListener("click", () => {
+        navList.classList.remove("active");
+        toggle.setAttribute("aria-expanded", "false");
+      });
+    });
+  </script>
+</body>
+</html>
