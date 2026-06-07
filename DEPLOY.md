@@ -31,6 +31,51 @@ Não publique arquivos `.env`, JSON de conta de serviço ou segredos no reposit�
 
 ## Backend
 
+## Vercel
+
+O projeto agora inclui os arquivos necessários para rodar o backend como Vercel Function:
+
+- `api/index.js`, para deploy usando a raiz do repositório.
+- `backend/api/index.js`, para deploy usando `backend` como Root Directory.
+- `backend/index.js`, para detecção de Express.
+- `vercel.json` e `backend/vercel.json`, com rewrites para o Express.
+
+Importante: a Vercel não mantém um servidor Node tradicional rodando 24 horas. O backend fica disponível como Function e é iniciado quando recebe requisições. Isso é esperado no modelo serverless.
+
+### Opção A: deploy pela raiz do repositório
+
+Use esta opção se a Vercel estiver conectada ao repositório inteiro.
+
+Configuração:
+
+- Root Directory: vazio ou raiz do projeto.
+- Install Command: use o padrão do `vercel.json`.
+- Build Command: vazio.
+- Output Directory: vazio.
+
+O `vercel.json` da raiz instala as dependências do backend e direciona as requisições para o Express.
+
+### Opção B: deploy apenas do backend
+
+Use esta opção se você criou um projeto separado para o backend.
+
+Configuração:
+
+- Root Directory: `backend`.
+- Install Command: `npm install`.
+- Build Command: vazio.
+- Output Directory: vazio.
+
+As rotas continuarão disponíveis em:
+
+```bash
+/health
+/api/auth/login
+/api/salas
+/api/sessoes/salvar
+/api/analises/dashboard
+```
+
 ### Render ou Railway
 
 1. Crie um novo serviço Node.js.
