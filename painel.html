@@ -658,11 +658,17 @@
 
   <script>
     const BACKEND_URL = (() => {
+      const configured = window.EQUILIBRIO_BACKEND_URL;
+      if (configured) {
+        return configured.replace(/\/$/, "");
+      }
+
       const host = window.location.hostname;
       if (!host || host === "localhost" || host === "127.0.0.1") {
         return "http://localhost:3001";
       }
-      return "https://sua-api-producao.com";
+
+      return window.location.origin;
     })();
 
     let token = localStorage.getItem("token");
