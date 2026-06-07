@@ -4,15 +4,7 @@
   "installCommand": "npm install --prefix backend",
   "functions": {
     "api/index.js": {
-      "includeFiles": [
-        "index.html",
-        "jogar.html",
-        "login.html",
-        "painel.html",
-        "firebase-config.js",
-        "backend/src/**",
-        "backend/package.json"
-      ]
+      "includeFiles": "{backend/**,*.html,firebase-config.js}"
     }
   },
   "rewrites": [
