@@ -381,7 +381,10 @@
           body: JSON.stringify({ nome, senha })
         });
 
-        const data = await response.json();
+        const contentType = response.headers.get("content-type") || "";
+        const data = contentType.includes("application/json")
+          ? await response.json()
+          : { erro: `Resposta inválida do backend (${response.status}). Verifique /health e /api/auth/login no deploy.` };
 
         if (!response.ok || !data.sucesso) {
           showMessage(data.erro || "Erro ao fazer login.", "error");
@@ -397,7 +400,7 @@
           window.location.href = "painel.html";
         }, 600);
       } catch (err) {
-        showMessage("Erro de conexão. Verifique se o backend está ativo.", "error");
+        showMessage(`Erro de conexão com ${BACKEND_URL}. Verifique se /health responde no deploy.`, "error");
       } finally {
         loginBtn.disabled = false;
         loginBtn.textContent = "Entrar";
