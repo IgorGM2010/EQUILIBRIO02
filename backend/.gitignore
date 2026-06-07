@@ -1,0 +1,20 @@
+# Dependencias
+node_modules/
+npm-debug.log
+
+# Ambiente
+.env
+.env.local
+.env.*.local
+serviceAccountKey.json
+*serviceAccount*.json
+data/
+
+# Logs locais
+*.log
+
+# Firebase
+.firebase/
+firebase-debug.log
+database-debug.log
+ui-debug.log

@@ -1,0 +1,3016 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="EQUILÍBRIO - Jogo psicoeducativo para reflexão sobre escolhas, emoções e saúde mental." />
+  <meta name="theme-color" content="#1D9E75" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>EQUILÍBRIO</title>
+  <style>
+    :root {
+      --bg: #DCF0F2;
+      --surface: #FFFFFF;
+      --title: #1D9E75;
+      --primary: #C9A0D0;
+      --text: #333333;
+      --text-muted: #666666;
+
+      --pensamento: #534AB7;
+      --emocao: #993556;
+      --comportamento: #0F6E56;
+      --saude: #854F0B;
+
+      --pensamento-bg: #EEEDFE;
+      --pensamento-text: #3C3489;
+      --emocao-bg: #F7E8EE;
+      --emocao-text: #7A2946;
+      --comportamento-bg: #E3F3EE;
+      --comportamento-text: #0B5C48;
+      --saude-bg: #F6EBDD;
+      --saude-text: #6D3F08;
+
+      --adapt-bg: #E1F5EE;
+      --adapt-border: #1D9E75;
+      --adapt-text: #085041;
+
+      --partial-bg: #FAEEDA;
+      --partial-border: #BA7517;
+      --partial-text: #412402;
+
+      --des-bg: #FCEBEB;
+      --des-border: #A32D2D;
+      --des-text: #501313;
+
+      --radius-pill: 50px;
+      --tr: 300ms ease;
+      --shadow-soft: 0 4px 32px rgba(0, 0, 0, 0.07);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    body {
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .app {
+      position: relative;
+      min-height: 100vh;
+      background: var(--bg);
+    }
+
+    .navbar-on-home + .app {
+      min-height: calc(100vh - 70px);
+    }
+
+    .game-started .app {
+      min-height: 100vh;
+    }
+
+    .navbar {
+      background: var(--surface);
+      box-shadow: 0 2px 18px rgba(0, 0, 0, 0.06);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .navbar-on-home {
+      display: block;
+    }
+
+    .game-started .navbar-on-home {
+      display: none;
+    }
+
+    .navbar-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 24px;
+      height: 70px;
+      max-width: 1180px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .navbar-logo a {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--title);
+      text-decoration: none;
+      letter-spacing: 0;
+    }
+
+    .navbar-toggle {
+      display: none;
+      border: none;
+      background: transparent;
+      color: var(--text);
+      font-size: 24px;
+      cursor: pointer;
+      padding: 8px;
+    }
+
+    .navbar-nav {
+      display: flex;
+    }
+
+    .nav-list {
+      display: flex;
+      align-items: center;
+      list-style: none;
+      gap: 32px;
+      margin: 0;
+      padding: 0;
+    }
+
+    .nav-link {
+      text-decoration: none;
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 500;
+      padding-bottom: 2px;
+      border-bottom: 2px solid transparent;
+    }
+
+    .nav-link:hover {
+      color: var(--title);
+    }
+
+    .nav-link-active {
+      color: var(--title);
+      font-weight: 700;
+      border-bottom-color: var(--title);
+    }
+
+    .nav-link-active:hover {
+      color: #0F6E56;
+      border-bottom-color: #0F6E56;
+    }
+
+    .screen {
+      position: absolute;
+      inset: 0;
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+      transition: opacity var(--tr), visibility var(--tr), transform var(--tr);
+    }
+
+    .screen.is-hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transform: translateY(8px);
+    }
+
+    .screen-start {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.25rem;
+    }
+
+    .start-card {
+      width: 100%;
+      max-width: 360px;
+      background: var(--surface);
+      border-radius: 28px;
+      padding: 2.35rem 2rem 2rem;
+      box-shadow: 0 18px 44px rgba(29, 158, 117, 0.13);
+    }
+
+    .start-title {
+      margin: 0 0 1.65rem;
+      text-align: center;
+      font-size: clamp(2.2rem, 9vw, 42px);
+      line-height: 1.05;
+      font-weight: 800;
+      color: var(--title);
+      letter-spacing: 0.01em;
+    }
+
+    .btn {
+      border: none;
+      outline: none;
+      cursor: pointer;
+      transition: background-color var(--tr), border-color var(--tr), color var(--tr), opacity var(--tr), transform var(--tr), box-shadow var(--tr), filter var(--tr);
+      font-family: inherit;
+    }
+
+    .btn:focus-visible {
+      box-shadow: 0 0 0 4px rgba(29, 158, 117, 0.18), 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-start {
+      width: 100%;
+      border-radius: var(--radius-pill);
+      background: var(--title);
+      color: #FFFFFF;
+      font-weight: 800;
+      font-size: 1rem;
+      min-height: 54px;
+      padding: 16px 20px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      letter-spacing: 0;
+      box-shadow: 0 10px 18px rgba(29, 158, 117, 0.2);
+    }
+
+    .btn-start:hover {
+      transform: translateY(-2px);
+      filter: brightness(0.98);
+      box-shadow: 0 14px 24px rgba(29, 158, 117, 0.26);
+    }
+
+    .btn-about {
+      width: 100%;
+      margin-top: 12px;
+      border-radius: 999px;
+      background: var(--primary);
+      border: none;
+      color: #FFFFFF;
+      font-size: 1rem;
+      font-weight: 800;
+      min-height: 50px;
+      padding: 15px 20px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.62rem;
+      line-height: 1;
+      letter-spacing: 0;
+      box-shadow: 0 9px 16px rgba(147, 91, 154, 0.16);
+    }
+
+    .btn-about:hover {
+      transform: translateY(-2px);
+      filter: brightness(0.985);
+      box-shadow: 0 13px 22px rgba(147, 91, 154, 0.24);
+    }
+
+    .btn-room {
+      width: 100%;
+      margin-top: 12px;
+      border-radius: 999px;
+      background: #F2CB65;
+      border: none;
+      color: #FFFFFF;
+      font-size: 1rem;
+      font-weight: 800;
+      min-height: 50px;
+      padding: 15px 20px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.62rem;
+      line-height: 1;
+      letter-spacing: 0;
+      box-shadow: 0 9px 16px rgba(201, 158, 56, 0.16);
+    }
+
+    .start-card .btn {
+      width: 100%;
+      min-height: 54px;
+      padding: 16px 20px;
+      border-radius: var(--radius-pill);
+      font-size: 1rem;
+      line-height: 1;
+    }
+
+    .btn-room:hover {
+      transform: translateY(-2px);
+      filter: brightness(0.985);
+      box-shadow: 0 13px 22px rgba(201, 158, 56, 0.26);
+    }
+
+    .btn-about-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: auto;
+      height: auto;
+      border: 0;
+      border-radius: 0;
+      font-size: 0.9rem;
+      font-weight: 800;
+      line-height: 1;
+      opacity: 0.92;
+      transform: translateY(-0.1px);
+    }
+
+    .btn-about-label {
+      letter-spacing: 0;
+    }
+
+    .about-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.35);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.25rem;
+      opacity: 0;
+      transition: opacity 250ms ease;
+    }
+
+    .about-modal-overlay.is-open {
+      opacity: 1;
+    }
+
+    .about-modal-overlay.is-closing {
+      opacity: 0;
+      transition: opacity 200ms ease;
+    }
+
+    .about-modal-card {
+      background: #FFFFFF;
+      border-radius: 24px;
+      width: 100%;
+      max-width: 400px;
+      max-height: 80vh;
+      overflow-y: auto;
+      padding: 1.5rem;
+      box-shadow: 0 8px 40px rgba(0, 0, 0, 0.15);
+      transform: scale(0.92);
+      opacity: 0;
+      transition: transform 250ms cubic-bezier(0.34, 1.56, 0.64, 1), opacity 250ms cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .about-modal-overlay.is-open .about-modal-card {
+      transform: scale(1);
+      opacity: 1;
+    }
+
+    .about-modal-overlay.is-closing .about-modal-card {
+      transform: scale(0.92);
+      opacity: 0;
+      transition: transform 200ms ease, opacity 200ms ease;
+    }
+
+    .about-modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 0.5px solid #EEEEEE;
+      padding-bottom: 12px;
+    }
+
+    .about-modal-title {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 700;
+      color: #1D9E75;
+    }
+
+    .about-modal-close {
+      background: transparent;
+      border: none;
+      font-size: 18px;
+      color: #999999;
+      cursor: pointer;
+      transition: color 200ms ease;
+    }
+
+    .about-modal-close:hover {
+      color: #333333;
+    }
+
+    .about-tabs {
+      display: flex;
+      gap: 8px;
+      margin: 16px 0;
+    }
+
+    .about-tab {
+      font-size: 13px;
+      padding: 6px 14px;
+      border-radius: 20px;
+      cursor: pointer;
+      border: none;
+      background: #F5F5F5;
+      color: #999999;
+      transition: all 200ms ease;
+    }
+
+    .about-tab.is-active {
+      background: #1D9E75;
+      color: #FFFFFF;
+    }
+
+    .about-content {
+      font-size: 14px;
+      color: #444444;
+      line-height: 1.7;
+      margin-top: 16px;
+    }
+
+    .about-content p {
+      margin: 0 0 10px;
+    }
+
+    .about-content p:last-child {
+      margin-bottom: 0;
+    }
+
+    .about-item {
+      padding: 10px 0;
+      border-bottom: 0.5px solid #EEEEEE;
+    }
+
+    .about-item:last-child {
+      border-bottom: none;
+    }
+
+    .about-item-title {
+      font-weight: 700;
+    }
+
+    .exit-modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 1200;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1.25rem;
+      background: rgba(8, 80, 65, 0.28);
+      backdrop-filter: blur(2px);
+    }
+
+    .exit-modal-overlay.is-open {
+      display: flex;
+    }
+
+    .exit-modal-card {
+      width: 100%;
+      max-width: 380px;
+      padding: 1.6rem;
+      background: #FFFFFF;
+      border-radius: 24px;
+      box-shadow: 0 18px 44px rgba(29, 158, 117, 0.18);
+      transform: translateY(4px) scale(0.98);
+      animation: exitModalIn 180ms ease forwards;
+    }
+
+    .exit-modal-title {
+      margin: 0 0 0.65rem;
+      color: var(--title);
+      font-size: 1.25rem;
+      line-height: 1.2;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .exit-modal-text {
+      margin: 0 0 1.25rem;
+      color: var(--text);
+      font-size: 0.95rem;
+      line-height: 1.55;
+      text-align: center;
+    }
+
+    .exit-modal-actions {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0.7rem;
+    }
+
+    .exit-modal-actions .btn {
+      width: 100%;
+      min-height: 46px;
+      border-radius: var(--radius-pill);
+      font-size: 0.95rem;
+      font-weight: 800;
+    }
+
+    .btn-exit-cancel {
+      background: var(--title);
+      color: #FFFFFF;
+    }
+
+    .btn-exit-confirm {
+      background: var(--primary);
+      color: #FFFFFF;
+    }
+
+    @keyframes exitModalIn {
+      to {
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .screen-game {
+      overflow-y: auto;
+      padding: 1.5rem 1rem;
+    }
+
+    .game-shell {
+      width: 100%;
+      max-width: 480px;
+      margin: 0 auto;
+      padding-bottom: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      transition: opacity var(--tr);
+    }
+
+    .game-shell.fade-out {
+      opacity: 0;
+    }
+
+    .game-header {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      width: 100%;
+    }
+
+    .header-spacer {
+      justify-self: start;
+      width: 18px;
+      height: 18px;
+    }
+
+    .header-title {
+      justify-self: center;
+      font-size: 13px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #999999;
+      font-weight: 600;
+    }
+
+    .header-close {
+      justify-self: end;
+      border: none;
+      background: transparent;
+      color: #999999;
+      font-size: 18px;
+      line-height: 1;
+      padding: 0;
+      width: 18px;
+      height: 18px;
+      cursor: default;
+    }
+
+    .indicator-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      align-items: center;
+      justify-items: center;
+      gap: 12px;
+      width: 100%;
+    }
+
+    .indicator-column {
+      text-align: center;
+      opacity: 0.25;
+      transition: opacity var(--tr);
+    }
+
+    .indicator-column.is-active {
+      opacity: 1;
+    }
+
+    .indicator-emoji {
+      display: block;
+      font-size: 26px;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .indicator-name {
+      display: block;
+      font-size: 11px;
+      letter-spacing: 0.4px;
+      color: #666666;
+      line-height: 1.2;
+    }
+
+    .card {
+      background: var(--surface);
+      border-radius: 20px;
+      border: 2.5px solid var(--pensamento);
+      box-shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+      width: 92%;
+      margin: 0 auto;
+      transition: border-color var(--tr);
+    }
+
+    .card-body {
+      padding: 0;
+    }
+
+    .situation-text {
+      margin: 0;
+      padding: 1.1rem 1.4rem;
+      text-align: center;
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 1.72;
+      text-wrap: pretty;
+      color: #222222;
+    }
+
+    .card.is-intro-card .situation-text {
+      text-align: justify;
+      font-size: 15.5px;
+      line-height: 1.65;
+      padding: 1rem 1.2rem 1.15rem;
+    }
+
+    .howto-lead {
+      margin: 0 0 10px;
+    }
+
+    .howto-response-list {
+      margin: 8px 0 12px;
+      padding-left: 1.15rem;
+      display: grid;
+      gap: 8px;
+    }
+
+    .howto-response-item {
+      line-height: 1.5;
+    }
+
+    .howto-type {
+      font-weight: 700;
+    }
+
+    .howto-type.adaptativo {
+      color: #1D9E75;
+    }
+
+    .howto-type.parcial {
+      color: #BA7517;
+    }
+
+    .howto-type.desadaptativo {
+      color: #A32D2D;
+    }
+
+    .howto-end {
+      margin: 0;
+    }
+
+    .context-label {
+      margin: 16px 0 0;
+      text-align: center;
+      text-transform: uppercase;
+      font-size: 11px;
+      letter-spacing: 1px;
+      color: #AAAAAA;
+      font-weight: 600;
+    }
+
+    .microfeedback {
+      margin-top: 0;
+      border-top: 0.5px solid #EEEEEE;
+      border-left: 3px solid transparent;
+      border-radius: 0;
+      padding: 0 14px;
+      opacity: 0;
+      max-height: 0;
+      overflow: hidden;
+      transition: opacity var(--tr), max-height var(--tr), padding var(--tr), background-color var(--tr), border-left-color var(--tr);
+    }
+
+    .microfeedback.show {
+      opacity: 1;
+      max-height: 240px;
+      padding: 12px 14px;
+    }
+
+    .microfeedback-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0;
+      border-radius: 0;
+      padding: 0;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+    }
+
+    .microfeedback-text {
+      margin: 0;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .combo-box {
+      margin-top: 0;
+      border-top: 0.5px solid #EEEEEE;
+      border-left: 3px solid transparent;
+      border-radius: 0 8px 8px 0;
+      padding: 0 14px;
+      opacity: 0;
+      max-height: 0;
+      overflow: hidden;
+      transition: opacity 300ms ease, max-height 300ms ease, padding 300ms ease;
+    }
+
+    .combo-box.show {
+      opacity: 1;
+      max-height: 180px;
+      padding: 10px 14px;
+    }
+
+    .combo-box.combo-active {
+      background: #FFFBEA;
+      border-left-color: #E8A020;
+      color: #854F0B;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .combo-box.combo-break {
+      background: #F7F7F7;
+      border-left-color: #AAAAAA;
+      color: #666666;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .combo-text {
+      margin: 0;
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+      width: 88%;
+      margin: 0 auto;
+    }
+
+    .option-btn {
+      width: 100%;
+      text-align: left;
+      background: #FFFFFF;
+      border: 1px solid #E0E0E0;
+      border-radius: 14px;
+      padding: 14px 16px;
+      font-size: 15px;
+      line-height: 1.5;
+      color: var(--text);
+      cursor: pointer;
+      transition: background-color 200ms ease, border-color var(--tr), color var(--tr), opacity var(--tr), transform var(--tr);
+    }
+
+    .option-btn:hover {
+      background: #F5F5F5;
+    }
+
+    .option-btn.is-dimmed {
+      opacity: 0.3;
+      pointer-events: none;
+    }
+
+    .next-btn {
+      width: 88%;
+      margin: 0 auto;
+      background: var(--title);
+      color: #FFFFFF;
+      font-weight: 700;
+      border-radius: var(--radius-pill);
+      padding: 14px;
+      font-size: 15px;
+      opacity: 0;
+      transform: translateY(6px);
+      pointer-events: none;
+      transition: opacity var(--tr), transform var(--tr);
+    }
+
+    .next-btn.show {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .summary {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      background: #DCF0F2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem 1rem;
+      overflow-y: auto;
+      opacity: 0;
+      transform: translateY(8px);
+      pointer-events: none;
+      transition: opacity var(--tr), transform var(--tr);
+    }
+
+    .summary[hidden] {
+      display: none !important;
+    }
+
+    .summary.show {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .summary-card {
+      background: #FFFFFF;
+      border-radius: 20px;
+      box-shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
+      max-width: 480px;
+      width: 100%;
+      margin: auto;
+      padding: 1.5rem 1rem;
+    }
+
+    .result-journey-title {
+      margin: 0;
+      text-align: center;
+      font-size: 28px;
+      font-weight: 700;
+      color: #1D9E75;
+      text-transform: none;
+    }
+
+    .result-journey-text {
+      margin: 0.7rem 0 1.2rem;
+      font-size: 15px;
+      color: #444444;
+      line-height: 1.7;
+      text-align: center;
+    }
+
+    .combo-summary {
+      font-size: 13px;
+      color: #999999;
+      text-align: center;
+      margin: 8px 0 1.1rem;
+    }
+
+    .result-section-title {
+      margin: 0 0 16px;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #999999;
+      font-weight: 600;
+    }
+
+    .result-section-panorama {
+      margin-top: 2rem;
+    }
+
+    .result-section-padrao {
+      margin-top: 2rem;
+    }
+
+    .result-section-refletir {
+      margin-top: 2rem;
+    }
+
+    .panorama-list {
+      display: grid;
+      gap: 14px;
+      margin-bottom: 1.2rem;
+    }
+
+    .panorama-row {
+      display: grid;
+      grid-template-columns: 150px minmax(120px, 1fr) 110px;
+      align-items: center;
+      gap: 8px 12px;
+    }
+
+    .panorama-label {
+      font-size: 14px;
+      font-weight: 500;
+      color: #333333;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .panorama-track {
+      width: 100%;
+      height: 7px;
+      border-radius: 4px;
+      background: #E8E8E8;
+      overflow: hidden;
+    }
+
+    .panorama-fill {
+      height: 100%;
+      width: 0;
+      border-radius: 4px;
+      transition: width 600ms ease;
+    }
+
+    .panorama-status {
+      white-space: nowrap;
+      text-align: right;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .panorama-microfeedback {
+      grid-column: 1 / -1;
+      margin: 0;
+      padding: 10px 12px;
+      background: #F7F7F7;
+      border-radius: 8px;
+      font-size: 13px;
+      color: #444444;
+      line-height: 1.4;
+      text-align: left;
+    }
+
+    .profile-summary-card {
+      background: var(--surface);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: var(--shadow-soft);
+      margin: 20px 0;
+      max-width: 100%;
+    }
+
+    .profile-summary-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--title);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .profile-summary-content {
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--text);
+      margin-bottom: 14px;
+      white-space: pre-wrap;
+    }
+
+    .profile-summary-action {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--title);
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid #EEEEEE;
+    }
+
+    .reflection-list {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 1.2rem;
+    }
+
+    .reflection-item {
+      background: #F7F7F7;
+      border-radius: 12px;
+      padding: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      color: #444444;
+      line-height: 1.65;
+    }
+
+    .reflection-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #1D9E75;
+      display: inline-block;
+      margin-right: 8px;
+      flex-shrink: 0;
+    }
+
+    .reflection-text {
+      flex: 1;
+    }
+
+    .disclaimer-section {
+      margin-top: 24px;
+      padding: 16px;
+      background: #FFF5E6;
+      border-left: 4px solid #BA7517;
+      border-radius: 8px;
+      font-size: 12px;
+      color: #412402;
+      line-height: 1.6;
+    }
+
+    .disclaimer-section p {
+      margin: 0 0 8px 0;
+    }
+
+    .disclaimer-section p:last-child {
+      margin: 0;
+    }
+
+    .result-ethics {
+      text-align: center;
+      font-size: 12px;
+      color: #AAAAAA;
+      line-height: 1.6;
+      padding: 0 1rem;
+      margin: 2rem 0 0;
+    }
+
+    .summary-actions {
+      margin-top: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .btn-restart {
+      width: 88%;
+      border-radius: var(--radius-pill);
+      padding: 14px;
+      background: var(--primary);
+      color: #FFFFFF;
+      font-weight: 700;
+      font-size: 15px;
+    }
+
+    .btn-home {
+      width: 88%;
+      border-radius: var(--radius-pill);
+      padding: 14px;
+      background: var(--title);
+      color: #FFFFFF;
+      font-weight: 700;
+      font-size: 15px;
+    }
+
+    @media (max-width: 430px) {
+      .navbar-container {
+        height: 56px;
+        padding: 0 12px;
+      }
+
+      .navbar-logo a {
+        font-size: 16px;
+      }
+
+      .nav-list {
+        top: 56px;
+        right: 12px;
+        min-width: 170px;
+        gap: 12px;
+      }
+
+      .nav-link {
+        font-size: 12px;
+        padding: 6px 0;
+      }
+
+      .screen-game {
+        padding: 1rem;
+      }
+
+      .card,
+      .options,
+      .next-btn {
+        width: 96%;
+      }
+
+      .situation-text {
+        font-size: 15.5px;
+        padding: 1rem 1.2rem;
+      }
+
+      .option-btn {
+        padding: 13px 14px;
+      }
+
+      .panorama-row {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+
+      .panorama-label,
+      .panorama-status {
+        width: auto;
+      }
+
+      .panorama-status {
+        text-align: left;
+      }
+
+      .panorama-track {
+        width: 100%;
+      }
+
+      .panorama-microfeedback {
+        grid-column: auto;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .navbar-container {
+        height: 60px;
+        padding: 0 16px;
+      }
+
+      .navbar-logo a {
+        font-size: 18px;
+      }
+
+      .navbar-toggle {
+        display: inline-flex;
+        margin-left: auto;
+      }
+
+      .nav-list {
+        gap: 16px;
+        flex-direction: column;
+        align-items: stretch;
+        position: absolute;
+        top: 60px;
+        right: 16px;
+        background: var(--surface);
+        padding: 16px;
+        border-radius: 12px;
+        box-shadow: var(--shadow-soft);
+        display: none;
+        min-width: 190px;
+      }
+
+      .nav-list.active {
+        display: flex;
+      }
+
+      .nav-link {
+        display: block;
+        font-size: 13px;
+        padding: 8px 4px;
+      }
+
+    }
+
+    @media (max-width: 480px) {
+      .navbar-container {
+        height: 56px;
+        padding: 0 12px;
+      }
+
+      .navbar-logo a {
+        font-size: 16px;
+      }
+
+      .nav-list {
+        top: 56px;
+        right: 12px;
+        min-width: 170px;
+        gap: 12px;
+      }
+
+      .nav-link {
+        font-size: 12px;
+        padding: 6px 0;
+      }
+    }
+
+    @media (max-width: 479px) {
+      .profile-summary-card {
+        padding: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header id="mainNavbar" class="navbar navbar-on-home">
+    <div class="navbar-container">
+      <div class="navbar-logo">
+        <a href="index.html">EQUILÍBRIO</a>
+      </div>
+      <button class="navbar-toggle" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="navList">☰</button>
+      <nav class="navbar-nav" aria-label="Navegação principal">
+        <ul id="navList" class="nav-list">
+          <li><a href="index.html" class="nav-link">Início</a></li>
+          <li><a href="jogar.html" class="nav-link nav-link-active">Jogar</a></li>
+          <li><a href="painel.html" class="nav-link">Painel do profissional</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <div id="appContainer" class="app">
+    <section id="startScreen" class="screen screen-start">
+      <div class="start-card">
+        <h1 class="start-title">EQUILÍBRIO</h1>
+        <button id="startBtn" class="btn btn-start" type="button" aria-label="Iniciar Jornada">
+          <span>Iniciar Jornada</span>
+        </button>
+
+        <button id="roomBtn" class="btn btn-room" type="button">
+          <span class="btn-about-label">Salas</span>
+        </button>
+
+        <button id="aboutBtn" class="btn btn-about" type="button">
+          <span class="btn-about-label">Sobre o Jogo</span>
+        </button>
+      </div>
+    </section>
+
+    <section id="gameScreen" class="screen screen-game is-hidden" aria-live="polite">
+      <main class="game-shell">
+        <div class="game-header">
+          <div class="header-spacer" aria-hidden="true"></div>
+          <div id="progressText" class="header-title">CARTA 1 DE 12</div>
+          <button id="closeBtn" class="header-close" type="button" aria-label="Fechar">✕</button>
+        </div>
+
+        <div id="indicatorGrid" class="indicator-grid">
+          <div class="indicator-column" data-indicator="Pensamento">
+            <span class="indicator-emoji">💡</span>
+            <span class="indicator-name">Pensamento</span>
+          </div>
+          <div class="indicator-column" data-indicator="Saúde física">
+            <span class="indicator-emoji">☀️</span>
+            <span class="indicator-name">Saúde física</span>
+          </div>
+          <div class="indicator-column" data-indicator="Emoção">
+            <span class="indicator-emoji">🩷</span>
+            <span class="indicator-name">Emoção</span>
+          </div>
+          <div class="indicator-column" data-indicator="Comportamento">
+            <span class="indicator-emoji">🧠</span>
+            <span class="indicator-name">Comportamento</span>
+          </div>
+        </div>
+
+        <article id="card" class="card">
+          <div class="card-body">
+            <p id="contextText" class="context-label"></p>
+            <p id="situationText" class="situation-text"></p>
+
+            <div id="microfeedback" class="microfeedback" role="status" aria-live="polite">
+              <div id="feedbackBadge" class="microfeedback-badge">
+                <span id="feedbackTypeLabel"></span>
+              </div>
+              <p id="feedbackText" class="microfeedback-text"></p>
+            </div>
+
+            <div id="comboBox" class="combo-box" aria-live="polite">
+              <p id="comboText" class="combo-text"></p>
+            </div>
+          </div>
+        </article>
+
+        <div id="options" class="options"></div>
+
+        <button id="nextBtn" class="btn next-btn" type="button">Próxima carta →</button>
+
+        <section id="summary" class="summary" hidden>
+          <div class="summary-card">
+            <h2 class="result-journey-title">Sua Jornada</h2>
+            <p id="journeyText" class="result-journey-text"></p>
+            <p id="comboSummaryText" class="combo-summary" hidden></p>
+
+            <h3 class="result-section-title result-section-panorama">Seus padrões</h3>
+            <div id="panoramaList" class="panorama-list"></div>
+
+            <h3 class="result-section-title result-section-padrao">Resumo geral</h3>
+            <div class="profile-summary-card">
+              <div id="profileSummaryTitle" class="profile-summary-title"></div>
+              <div id="profileSummaryContent" class="profile-summary-content"></div>
+              <div id="profileSummaryAction" class="profile-summary-action"></div>
+            </div>
+
+            <h3 class="result-section-title result-section-refletir">Para refletir</h3>
+            <div id="reflectionList" class="reflection-list"></div>
+
+            <div class="disclaimer-section">
+              <p>⚠ Este jogo não identifica problemas reais enfrentados por alunos. Use-o como ferramenta de autoconhecimento.</p>
+              <p>⚠ Este jogo não substitui o acompanhamento profissional. Se você enfrenta dificuldades, procure ajuda de um psicólogo.</p>
+            </div>
+
+            <div class="summary-actions">
+              <button id="restartBtn" class="btn btn-restart" type="button">Jogar novamente</button>
+              <button id="backHomeBtn" class="btn btn-home" type="button">Voltar ao início</button>
+            </div>
+          </div>
+        </section>
+      </main>
+    </section>
+  </div>
+
+  <div id="exitRoomModal" class="exit-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="exitRoomTitle" aria-hidden="true">
+    <section class="exit-modal-card">
+      <h2 id="exitRoomTitle" class="exit-modal-title">Sair da sala?</h2>
+      <p class="exit-modal-text">Se você sair agora, as respostas desta tentativa não serão computadas para a sala.</p>
+      <div class="exit-modal-actions">
+        <button id="exitRoomCancelBtn" class="btn btn-exit-cancel" type="button">Continuar jogando</button>
+        <button id="exitRoomConfirmBtn" class="btn btn-exit-confirm" type="button">Sair da sala</button>
+      </div>
+    </section>
+  </div>
+
+  <div id="modal-sala-jogo" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; padding: 20px;">
+    <div style="background: white; padding: 32px; border-radius: 12px; max-width: 400px; width: 100%; box-shadow: 0 8px 24px rgba(0,0,0,0.2);">
+      <button onclick="fecharModalSalaJogo()" style="float: right; background: none; border: none; font-size: 24px; cursor: pointer; color: #999;" aria-label="Fechar">&times;</button>
+      <h2 style="color: #20A881; margin: 0 0 10px;">Entrar em Sala</h2>
+      <p style="color: #666; margin-bottom: 20px; font-size: 14px;">Insira seu nome e o código da sala.</p>
+
+      <div style="margin-bottom: 15px;">
+        <label style="display: block; color: #333; font-weight: 600; margin-bottom: 5px; font-size: 14px;" for="input-nome-sala-jogo">Seu nome (opcional)</label>
+        <input id="input-nome-sala-jogo" type="text" placeholder="Ex: João Silva" maxlength="50" style="width: 100%; min-height: 44px; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; box-sizing: border-box;">
+      </div>
+
+      <div style="margin-bottom: 15px;">
+        <label style="display: block; color: #333; font-weight: 600; margin-bottom: 5px; font-size: 14px;" for="input-codigo-sala-jogo">Código da sala</label>
+        <input id="input-codigo-sala-jogo" type="text" placeholder="Ex: EQUI2A26" maxlength="8" style="width: 100%; min-height: 44px; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; box-sizing: border-box; text-transform: uppercase;">
+      </div>
+
+      <div id="msg-erro-sala-jogo" style="color: #d32f2f; margin-bottom: 15px; font-size: 13px; display: none;"></div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+        <button onclick="fecharModalSalaJogo()" style="min-height: 44px; padding: 12px; background: #f0f0f0; color: #333; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">Cancelar</button>
+        <button onclick="entrarNaSalaJogo()" style="min-height: 44px; padding: 12px; background: #F4D876; color: #333; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">Entrar</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-database-compat.js"></script>
+  <script src="firebase-config.js"></script>
+  <script>
+    const BACKEND_URL = (() => {
+      const configured = window.EQUILIBRIO_BACKEND_URL;
+      if (configured) {
+        return configured.replace(/\/$/, "");
+      }
+
+      const host = window.location.hostname;
+      if (!host || host === "localhost" || host === "127.0.0.1") {
+        return "http://localhost:3001";
+      }
+
+      return "https://sua-api.com";
+    })();
+
+    let salaAtual = null;
+    let estudanteNome = "";
+    let resultadoSalaSalvo = false;
+    let jogoIniciadoEmSala = false;
+
+    const INDICATOR_STYLE = {
+      "Pensamento": {
+        color: "#E8A020"
+      },
+      "Emoção": {
+        color: "#D4537E"
+      },
+      "Comportamento": {
+        color: "#C9A0D0"
+      },
+      "Saúde física": {
+        color: "#E8A020"
+      }
+    };
+
+    const RESPONSE_STYLE = {
+      adaptativo: {
+        bg: "#E1F5EE",
+        border: "#1D9E75",
+        text: "#085041",
+        label: "Resposta adaptativa"
+      },
+      parcial: {
+        bg: "#FAEEDA",
+        border: "#BA7517",
+        text: "#412402",
+        label: "Resposta parcialmente desadaptativa"
+      },
+      desadaptativo: {
+        bg: "#FCEBEB",
+        border: "#A32D2D",
+        text: "#501313",
+        label: "Resposta desadaptativa"
+      }
+    };
+
+    const RESULT_META = {
+      "Pensamento": {
+        emoji: "💡",
+        color: "#E8A020",
+        forte: "Você mostrou flexibilidade para pensar e se reposicionar nas situações mais difíceis.",
+        desenvolver: "Em alguns momentos, seus pensamentos ficaram duros com você. Você pode treinar uma visão mais justa e realista.",
+        dica: "Quando vier um pensamento negativo automático, pergunte: isso é fato ou é uma interpretação minha?"
+      },
+      "Saúde física": {
+        emoji: "☀️",
+        color: "#E8A020",
+        forte: "Você cuidou bem do seu corpo e da sua rotina no dia a dia.",
+        desenvolver: "Seu corpo também precisa de atenção quando a rotina aperta. Sono, alimentação e movimento mudam seu bem-estar.",
+        dica: "Mover o corpo por 15 minutos por dia já ajuda no humor, na energia e na concentração."
+      },
+      "Emoção": {
+        emoji: "🩷",
+        color: "#D4537E",
+        forte: "Você reconheceu melhor suas emoções e lidou com elas de forma mais equilibrada.",
+        desenvolver: "Algumas emoções ainda ficam muito intensas para você. Com treino, elas podem perder força.",
+        dica: "Dê nome ao que você está sentindo. Esse passo simples já ajuda a organizar a emoção."
+      },
+      "Comportamento": {
+        emoji: "🧠",
+        color: "#C9A0D0",
+        forte: "Suas atitudes mostraram cuidado com você e com o que é importante na sua rotina.",
+        desenvolver: "Sob pressão, algumas escolhas podem ser mais impulsivas. Pequenas mudanças já fazem diferença.",
+        dica: "Quebre tarefas grandes em etapas pequenas. Assim fica mais fácil começar sem se sobrecarregar."
+      }
+    };
+
+    const RESULT_ORDER = ["Pensamento", "Saúde física", "Emoção", "Comportamento"];
+
+    let comboAtual = 0;
+    let comboMaximo = 0;
+    let comboInterrompidoJaExibiu = false;
+    let aboutModalOverlay = null;
+
+    const cartas = [
+
+      // Pensamento
+
+      {
+        indicadores: ["Pensamento"],
+        contexto: "ESCOLA",
+        situacao: "Você tirou nota baixa em uma prova para a qual estudou bastante. Na hora, pensou: \"Sou burro, não adianta tentar.\"",
+        opcoes: [
+          {
+            texto: "Essa nota não define minha capacidade. Vou entender onde errei e me preparar melhor.",
+            tipo: "adaptativo",
+            pontos: 2,
+            feedback: "Quando você pensa \"sou burro\", isso parece verdade no calor do momento. Esse tipo de distorção cognitiva é uma avaliação injusta. Foque no erro que pode corrigir e no que já aprendeu."
+          },
+          {
+            texto: "Realmente não tenho jeito pra isso. Vou desistir de tentar nessa matéria.",
+            tipo: "desadaptativo",
+            pontos: 0,
+            feedback: "Quando você pensa \"sou burro\", isso parece verdade no calor do momento. Esse tipo de distorção cognitiva é uma avaliação injusta. Foque no erro que pode corrigir e no que já aprendeu."
+          },
+          {
+            texto: "Foi só essa prova. Mesmo assim, continuo pensando que não sou bom o suficiente.",
+            tipo: "parcial",
+            pontos: 1,
+            feedback: "Quando você pensa \"sou burro\", isso parece verdade no calor do momento. Esse tipo de distorção cognitiva é uma avaliação injusta. Foque no erro que pode corrigir e no que já aprendeu."
+          }
+        ]
+      },
+
+      {
+        indicadores: ["Pensamento"],
+        contexto: "ESCOLA",
+        situacao: "Você está estudando, mas se compara com um colega que parece entender tudo rápido. Aí vem o pensamento: \"Nunca vou chegar no nível dele.\"",
+        opcoes: [
+          {
+            texto: "Cada um tem seu ritmo. O que importa é o meu progresso, não o dele.",
+            tipo: "adaptativo",
+            pontos: 2,
+            feedback: "Se comparar o tempo todo aumenta a insegurança. Você vê o resultado do outro, mas não vê o processo. Olhar para seu próprio avanço é mais justo e mais útil."
+          },
+          {
+            texto: "Não adianta, ele sempre vai ser melhor do que eu. Nem vou me esforçar.",
+            tipo: "desadaptativo",
+            pontos: 0,
+            feedback: "Se comparar o tempo todo aumenta a insegurança. Você vê o resultado do outro, mas não vê o processo. Olhar para seu próprio avanço é mais justo e mais útil."
+          },
+          {
+            texto: "Vou tentar estudar mais, mas no fundo acho que ele é simplesmente mais inteligente.",
+            tipo: "parcial",
+            pontos: 1,
+            feedback: "Se comparar o tempo todo aumenta a insegurança. Você vê o resultado do outro, mas não vê o processo. Olhar para seu próprio avanço é mais justo e mais útil."
+          }
+        ]
+      },
+
+      {
+        indicadores: ["Pensamento"],
+        contexto: "ESCOLA",
+        situacao: "Você vai apresentar um trabalho. Antes de começar, pensa: \"Vou travar e todo mundo vai rir de mim.\"",
+        opcoes: [
+          {
+            texto: "Posso ficar nervoso, mas me preparei. Vou focar no conteúdo, não no julgamento dos outros.",
+            tipo: "adaptativo",
+            pontos: 2,
+            feedback: "Imaginar o pior antes de começar é comum. Esse pensamento aumenta sua ansiedade e atrapalha seu desempenho. Respire e volte para o que você preparou."
+          },
+          {
+            texto: "Melhor fingir que estou doente e não apresentar. Não aguento essa situação.",
+            tipo: "desadaptativo",
+            pontos: 0,
+            feedback: "Imaginar o pior antes de começar é comum. Esse pensamento aumenta sua ansiedade e atrapalha seu desempenho. Respire e volte para o que você preparou."
+          },
+          {
+            texto: "Vou apresentar, mas já estou convicto de que vai ser um fracasso.",
+            tipo: "parcial",
+            pontos: 1,
+            feedback: "Imaginar o pior antes de começar é comum. Esse pensamento aumenta sua ansiedade e atrapalha seu desempenho. Respire e volte para o que você preparou."
+          }
+        ]
+      },
+
+      // Emoção
+
+      {
+        indicadores: ["Emoção"],
+        contexto: "CASA",
+        situacao: "Na véspera de uma prova importante, a ansiedade bate forte. Você não consegue dormir direito e o coração acelera ao pensar no dia seguinte.",
+        opcoes: [
+          {
+            texto: "Estou ansioso porque me importo. Vou respirar fundo, revisar o que consigo e descansar.",
+            tipo: "adaptativo",
+            pontos: 2,
+            feedback: "Sentir ansiedade antes de prova é comum. Em excesso, ela paralisa. Quando você reconhece o que sente e age com calma, seu corpo e sua mente respondem melhor."
+          },
+          {
+            texto: "Se estou assim, é porque não estou preparado. Vou estudar a noite toda sem parar.",
+            tipo: "desadaptativo",
+            pontos: 0,
+            feedback: "Sentir ansiedade antes de prova é comum. Em excesso, ela paralisa. Quando você reconhece o que sente e age com calma, seu corpo e sua mente respondem melhor."
+          },
+          {
+            texto: "Vou tentar me distrair com o celular pra não pensar nisso.",
+            tipo: "parcial",
+            pontos: 1,
+            feedback: "Sentir ansiedade antes de prova é comum. Em excesso, ela paralisa. Quando você reconhece o que sente e age com calma, seu corpo e sua mente respondem melhor."
+          }
+        ]
+      },
+
+      {
+        indicadores: ["Emoção"],
+        contexto: "SOCIAL",
+        situacao: "Você brigou com seu melhor amigo e ficou remoendo isso o dia todo. Mesmo tentando se distrair, o pensamento volta sem parar.",
+        opcoes: [
+          {
+            texto: "Estou magoado e tudo bem sentir isso. Quando me acalmar, vou conversar com ele.",
+            tipo: "adaptativo",
+            pontos: 2,
+            feedback: "Ficar remoendo um conflito prolonga a dor. Quando você nomeia o que sente e escolhe um bom momento para conversar, a situação fica mais leve."
+          },
+          {
+            texto: "Decido ignorar o amigo completamente. Se ele se importasse, não teria feito isso.",
+            tipo: "desadaptativo",
+            pontos: 0,
+            feedback: "Ficar remoendo um conflito prolonga a dor. Quando você nomeia o que sente e escolhe um bom momento para conversar, a situação fica mais leve."
+          },
+          {
+            texto: "Vou fingir que estou bem, mas por dentro continuo remoendo.",
+            tipo: "parcial",
+            pontos: 1,
+            feedback: "Ficar remoendo um conflito prolonga a dor. Quando você nomeia o que sente e escolhe um bom momento para conversar, a situação fica mais leve."
+          }
+        ]
+      },
+
+      {
+        indicadores: ["Emoção", "Comportamento"],
+        contexto: "SOCIAL",
+        situacao: "Você está em uma festa com amigos, mas se sente deslocado e com vontade de ir embora. Parece que só você não está se divertindo.",
+        opcoes: [
+          {
+            texto: "Estou me sentindo assim agora, mas não precisa ser sempre assim. Vou tentar me envolver um pouco antes de decidir ir embora.",
+            tipo: "adaptativo",
+            pontos: 2,
+            feedback: "Sentir-se deslocado em ambientes sociais é mais comum do que parece. Se você evita tudo, essa sensação cresce. Dar pequenos passos ajuda seu cérebro a ganhar confiança."
+          },
+          {
+            texto: "Saio sem falar nada, sumo e fico no celular em casa. Não sou feito pra essas coisas.",
+            tipo: "desadaptativo",
+            pontos: 0,
+            feedback: "Sentir-se deslocado em ambientes sociais é mais comum do que parece. Se você evita tudo, essa sensação cresce. Dar pequenos passos ajuda seu cérebro a ganhar confiança."
+          },
+          {
+            texto: "Fico mais um pouco, mas no celular o tempo todo pra não ter que interagir.",
+            tipo: "parcial",
+            pontos: 1,
+            feedback: "Sentir-se deslocado em ambientes sociais é mais comum do que parece. Se você evita tudo, essa sensação cresce. Dar pequenos passos ajuda seu cérebro a ganhar confiança."
+          }
+        ]
+      },
+
+      // Comportamento
+
+      {
+        indicadores: ["Comportamento"],
+        contexto: "CASA",
+        situacao: "Você tem muitas tarefas para o fim de semana, mas passa o tempo vendo séries. Quando chega domingo à noite, quase nada foi feito.",
+        opcoes: [
+          {
+            texto: "Vou dividir as tarefas em pequenos blocos e começar pela mais fácil agora.",
+            tipo: "adaptativo",
+            pontos: 2,
+            feedback: "Procrastinar costuma ser uma resposta à ansiedade, não falta de caráter. Quando você quebra a tarefa em partes pequenas, começar fica muito mais possível."
+          },
+          {
+            texto: "Deixa pra semana que vem. Já era esse fim de semana mesmo.",
+            tipo: "desadaptativo",
+            pontos: 0,
+            feedback: "Procrastinar costuma ser uma resposta à ansiedade, não falta de caráter. Quando você quebra a tarefa em partes pequenas, começar fica muito mais possível."
+          },
+          {
+            texto: "Faço tudo correndo agora de madrugada, mal feito mas entregue.",
+            tipo: "parcial",
+            pontos: 1,
+            feedback: "Procrastinar costuma ser uma resposta à ansiedade, não falta de caráter. Quando você quebra a tarefa em partes pequenas, começar fica muito mais possível."
+          }
+        ]
+      },
+
+      {
+        indicadores: ["Comportamento"],
+        contexto: "ESCOLA",
+        situacao: "O professor explica um conteúdo importante e você não entende. Dá vergonha de perguntar e parecer que só você ficou com dúvida.",
+        opcoes: [
+          {
+            texto: "Vou levantar a mão e perguntar. Provavelmente outros também têm a mesma dúvida.",
+            tipo: "adaptativo",
+            pontos: 2,
+            feedback: "Pedir ajuda é uma habilidade. Quando você guarda a dúvida por vergonha, o conteúdo vai acumulando e tudo fica mais difícil depois."
+          },
+          {
+            texto: "Não pergunto nada. Depois vejo no YouTube ou copio do colega na prova.",
+            tipo: "desadaptativo",
+            pontos: 0,
+            feedback: "Pedir ajuda é uma habilidade. Quando você guarda a dúvida por vergonha, o conteúdo vai acumulando e tudo fica mais difícil depois."
+          },
+          {
+            texto: "Anoto a dúvida pra pesquisar depois, mas acabo esquecendo e indo sem entender.",
+            tipo: "parcial",
+            pontos: 1,
+            feedback: "Pedir ajuda é uma habilidade. Quando você guarda a dúvida por vergonha, o conteúdo vai acumulando e tudo fica mais difícil depois."
+          }
+        ]
+      },
+
+      {
+        indicadores: ["Comportamento", "Pensamento"],
+        contexto: "SOCIAL",
+        situacao: "Seus amigos estão usando substâncias numa festa e te oferecem. Você não quer, mas sente uma pressão enorme pra aceitar pra não parecer certinho.",
+        opcoes: [
+          {
+            texto: "Recuso com tranquilidade. Sei o que quero e não preciso me justificar pra ninguém.",
+            tipo: "adaptativo",
+            pontos: 2,
+            feedback: "Dizer não com clareza é um ato de autocuidado. Ceder à pressão para ser aceito pode te afastar do que você realmente quer. Sua autonomia vale mais do que a aprovação do momento."
+          },
+          {
+            texto: "Aceito pra não criar clima. No fundo não queria, mas não sei dizer não.",
+            tipo: "desadaptativo",
+            pontos: 0,
+            feedback: "Dizer não com clareza é um ato de autocuidado. Ceder à pressão para ser aceito pode te afastar do que você realmente quer. Sua autonomia vale mais do que a aprovação do momento."
+          },
+          {
+            texto: "Recuso, mas fico me sentindo excluído e ansioso pelo resto da noite.",
+            tipo: "parcial",
+            pontos: 1,
+            feedback: "Recusar foi uma escolha importante. O sentimento de exclusão que vem depois é real e merece atenção. Com o tempo, agir de acordo com seus valores torna esse desconforto menor."
+          }
+        ]
+      },
+
+      // Saúde física
+
+      {
+        indicadores: ["Saúde física", "Comportamento"],
+        contexto: "CASA",
+        situacao: "Você ficou no celular até tarde, dormiu pouco e acordou cansado no dia seguinte.",
+        opcoes: [
+          {
+            texto: "Hoje vai ser difícil, mas vou tentar organizar meu dia e dormir melhor à noite.",
+            tipo: "adaptativo",
+            pontos: 2,
+            feedback: "Seu sono afeta energia, atenção e humor. Pequenos ajustes na noite, como definir hora para sair do celular, melhoram muito o dia seguinte."
+          },
+          {
+            texto: "Já estraguei o dia mesmo, então tanto faz manter assim.",
+            tipo: "desadaptativo",
+            pontos: 0,
+            feedback: "Seu sono afeta energia, atenção e humor. Pequenos ajustes na noite, como definir hora para sair do celular, melhoram muito o dia seguinte."
+          },
+          {
+            texto: "Vou tentar compensar com café e seguir o dia.",
+            tipo: "parcial",
+            pontos: 1,
+            feedback: "Seu sono afeta energia, atenção e humor. Pequenos ajustes na noite, como definir hora para sair do celular, melhoram muito o dia seguinte."
+          }
+        ]
+      },
+
+      {
+        indicadores: ["Saúde física"],
+        contexto: "CASA",
+        situacao: "Há dias você não come direito. Pula o café da manhã, almoça correndo e chega em casa sem energia. Mesmo assim, acha que não tem tempo para cuidar disso.",
+        opcoes: [
+          {
+            texto: "Alimentação afeta meu rendimento. Vou me organizar pra ter pelo menos refeições básicas no meu dia.",
+            tipo: "adaptativo",
+            pontos: 2,
+            feedback: "Em fases de estresse, é comum largar a alimentação de lado. Seu cérebro precisa de energia para aprender e focar. Cuidar disso agora te ajuda a render melhor."
+          },
+          {
+            texto: "Não tenho tempo pra isso. Quando terminar essa fase corrida, me cuido.",
+            tipo: "desadaptativo",
+            pontos: 0,
+            feedback: "Em fases de estresse, é comum largar a alimentação de lado. Seu cérebro precisa de energia para aprender e focar. Cuidar disso agora te ajuda a render melhor."
+          },
+          {
+            texto: "Levo uma barrinha de cereal pra escola. Não é ideal, mas é algo.",
+            tipo: "parcial",
+            pontos: 1,
+            feedback: "Em fases de estresse, é comum largar a alimentação de lado. Seu cérebro precisa de energia para aprender e focar. Cuidar disso agora te ajuda a render melhor."
+          }
+        ]
+      },
+
+      {
+        indicadores: ["Saúde física", "Emoção"],
+        contexto: "CASA",
+        situacao: "Você percebe que faz semanas que não sai de casa além da escola, não pratica nenhuma atividade física e está se sentindo pesado e sem motivação.",
+        opcoes: [
+          {
+            texto: "Vou começar com algo pequeno, como uma caminhada curta ou 15 minutos de alongamento.",
+            tipo: "adaptativo",
+            pontos: 2,
+            feedback: "Ficar muito tempo sem se mover pode derrubar seu humor e sua motivação. Você não precisa começar com intensidade. Poucos minutos já ajudam de verdade."
+          },
+          {
+            texto: "Não tenho disposição pra nada mesmo. Fico deitado que é melhor.",
+            tipo: "desadaptativo",
+            pontos: 0,
+            feedback: "Ficar muito tempo sem se mover pode derrubar seu humor e sua motivação. Você não precisa começar com intensidade. Poucos minutos já ajudam de verdade."
+          },
+          {
+            texto: "Fico culpado por não me exercitar, mas não faço nada a respeito.",
+            tipo: "parcial",
+            pontos: 1,
+            feedback: "Ficar muito tempo sem se mover pode derrubar seu humor e sua motivação. Você não precisa começar com intensidade. Poucos minutos já ajudam de verdade."
+          }
+        ]
+      }
+
+    ];
+
+    const state = {
+      indiceAtual: 0,
+      respondeu: false,
+      mostrandoCartaComoJogar: false,
+      pontuacoes: {
+        "Pensamento": 0,
+        "Emoção": 0,
+        "Comportamento": 0,
+        "Saúde física": 0
+      },
+      respostasTipos: []
+    };
+
+    const el = {
+      mainNavbar: document.getElementById("mainNavbar"),
+      appContainer: document.getElementById("appContainer"),
+      startScreen: document.getElementById("startScreen"),
+      gameScreen: document.getElementById("gameScreen"),
+      startBtn: document.getElementById("startBtn"),
+      roomBtn: document.getElementById("roomBtn"),
+      aboutBtn: document.getElementById("aboutBtn"),
+      roomModal: document.getElementById("modal-sala-jogo"),
+      roomNameInput: document.getElementById("input-nome-sala-jogo"),
+      roomCodeInput: document.getElementById("input-codigo-sala-jogo"),
+      roomModalError: document.getElementById("msg-erro-sala-jogo"),
+      exitRoomModal: document.getElementById("exitRoomModal"),
+      exitRoomCancelBtn: document.getElementById("exitRoomCancelBtn"),
+      exitRoomConfirmBtn: document.getElementById("exitRoomConfirmBtn"),
+      closeBtn: document.getElementById("closeBtn"),
+      navbarToggle: document.querySelector(".navbar-toggle"),
+      navList: document.querySelector(".nav-list"),
+      progressText: document.getElementById("progressText"),
+      gameShell: document.querySelector(".game-shell"),
+      gameHeader: document.querySelector(".game-header"),
+      indicatorGrid: document.getElementById("indicatorGrid"),
+      card: document.getElementById("card"),
+      situationText: document.getElementById("situationText"),
+      contextText: document.getElementById("contextText"),
+      microfeedback: document.getElementById("microfeedback"),
+      feedbackBadge: document.getElementById("feedbackBadge"),
+      feedbackTypeLabel: document.getElementById("feedbackTypeLabel"),
+      feedbackText: document.getElementById("feedbackText"),
+      comboBox: document.getElementById("comboBox"),
+      comboText: document.getElementById("comboText"),
+      options: document.getElementById("options"),
+      nextBtn: document.getElementById("nextBtn"),
+      summary: document.getElementById("summary"),
+      journeyText: document.getElementById("journeyText"),
+      comboSummaryText: document.getElementById("comboSummaryText"),
+      panoramaList: document.getElementById("panoramaList"),
+      profileSummaryTitle: document.getElementById("profileSummaryTitle"),
+      profileSummaryContent: document.getElementById("profileSummaryContent"),
+      profileSummaryAction: document.getElementById("profileSummaryAction"),
+      reflectionList: document.getElementById("reflectionList"),
+      restartBtn: document.getElementById("restartBtn"),
+      backHomeBtn: document.getElementById("backHomeBtn")
+    };
+
+    function inicializarSala() {
+      const salaId = sessionStorage.getItem("sala_id");
+      const codigoSala = sessionStorage.getItem("codigo_sala");
+      const nome = sessionStorage.getItem("estudante_nome");
+      const nomeSala = sessionStorage.getItem("sala_nome");
+
+      if (!salaId || !codigoSala) {
+        salaAtual = null;
+        estudanteNome = "";
+        return;
+      }
+
+      salaAtual = {
+        id: salaId,
+        codigo: codigoSala,
+        nome: nomeSala || "sala"
+      };
+      estudanteNome = nome || "";
+      resultadoSalaSalvo = false;
+    }
+
+    function limparVinculoSala() {
+      salaAtual = null;
+      estudanteNome = "";
+      resultadoSalaSalvo = false;
+      jogoIniciadoEmSala = false;
+      sessionStorage.removeItem("sala_id");
+      sessionStorage.removeItem("codigo_sala");
+      sessionStorage.removeItem("estudante_nome");
+      sessionStorage.removeItem("sala_nome");
+      sessionStorage.removeItem("auto_iniciar_jogo");
+    }
+
+    function abrirModalSalaJogo() {
+      el.roomNameInput.value = estudanteNome || "";
+      el.roomCodeInput.value = salaAtual ? salaAtual.codigo : "";
+      el.roomModalError.textContent = "";
+      el.roomModalError.style.display = "none";
+      el.roomModal.style.display = "flex";
+      window.setTimeout(() => el.roomCodeInput.focus(), 100);
+    }
+
+    function fecharModalSalaJogo() {
+      el.roomModal.style.display = "none";
+    }
+
+    function abrirModalSaidaSala() {
+      el.exitRoomModal.classList.add("is-open");
+      el.exitRoomModal.setAttribute("aria-hidden", "false");
+      el.exitRoomCancelBtn.focus();
+    }
+
+    function fecharModalSaidaSala() {
+      el.exitRoomModal.classList.remove("is-open");
+      el.exitRoomModal.setAttribute("aria-hidden", "true");
+    }
+
+    function sairDaTelaDoJogo() {
+      document.body.classList.remove("game-started");
+      fecharMenuNavegacao();
+      el.gameScreen.classList.add("is-hidden");
+      el.startScreen.classList.remove("is-hidden");
+    }
+
+    function confirmarSaidaSala() {
+      fecharModalSaidaSala();
+      limparVinculoSala();
+      sairDaTelaDoJogo();
+    }
+
+    async function entrarNaSalaJogo() {
+      const nome = el.roomNameInput.value.trim();
+      const codigo = el.roomCodeInput.value.trim().toUpperCase();
+
+      el.roomModalError.textContent = "";
+      el.roomModalError.style.display = "none";
+
+      if (!codigo) {
+        el.roomModalError.textContent = "Digite o código da sala.";
+        el.roomModalError.style.display = "block";
+        return;
+      }
+
+      if (codigo.length !== 8) {
+        el.roomModalError.textContent = "O código deve ter 8 caracteres.";
+        el.roomModalError.style.display = "block";
+        return;
+      }
+
+      if (!/^[A-Z0-9]{8}$/.test(codigo)) {
+        el.roomModalError.textContent = "O código contém caracteres inválidos.";
+        el.roomModalError.style.display = "block";
+        return;
+      }
+
+      try {
+        const response = await fetch(`${BACKEND_URL}/api/salas/validar/${codigo}`);
+        const data = await response.json();
+
+        if (!response.ok || !data.valido) {
+          el.roomModalError.textContent = data.erro || "Código inválido.";
+          el.roomModalError.style.display = "block";
+          return;
+        }
+
+        salaAtual = {
+          id: data.salaId,
+          codigo: codigo,
+          nome: data.nomeSala || "sala"
+        };
+        estudanteNome = nome;
+        resultadoSalaSalvo = false;
+
+        sessionStorage.setItem("sala_id", salaAtual.id);
+        sessionStorage.setItem("codigo_sala", codigo);
+        sessionStorage.setItem("estudante_nome", estudanteNome);
+        sessionStorage.setItem("sala_nome", salaAtual.nome);
+
+        fecharModalSalaJogo();
+        sessionStorage.removeItem("auto_iniciar_jogo");
+        iniciarJornada();
+      } catch (err) {
+        console.error("[JOGO] Erro ao validar código:", err);
+        el.roomModalError.textContent = "Erro de conexão. Verifique se o backend está ativo.";
+        el.roomModalError.style.display = "block";
+      }
+    }
+
+    function classificarIndicador(percentual) {
+      if (percentual >= 75) {
+        return { texto: "Boa", simbolo: "✦", cor: "indicador" };
+      }
+      if (percentual >= 50) {
+        return { texto: "Média", simbolo: "◎", cor: "#BA7517" };
+      }
+      return { texto: "Baixa", simbolo: "○", cor: "#A32D2D" };
+    }
+
+    function classificarGeral(media) {
+      if (media >= 75) {
+        return "alta";
+      }
+      if (media >= 50) {
+        return "media";
+      }
+      return "baixa";
+    }
+
+    function textoSaudacao(classificacao) {
+      if (classificacao === "alta") {
+        return "Você fez escolhas muito saudáveis ao longo da jornada. Isso mostra autoconsciência e cuidado com você. Continue nesse caminho.";
+      }
+      if (classificacao === "media") {
+        return "Você tem pontos fortes importantes e também áreas para desenvolver. Isso é normal e faz parte do autoconhecimento.";
+      }
+      return "Esta jornada mostrou áreas que pedem mais atenção. Reconhecer isso já é um grande passo. Com pequenas mudanças, você pode avançar bastante.";
+    }
+
+    function obterMicrofeedbackPanorama(indicador, percentual) {
+      const feedbacks = {
+        "Pensamento": {
+          bom: "Você analisa situações de forma clara e equilibrada.",
+          mediano: "Trabalhe na identificação de padrões de pensamento que podem estar limitando você.",
+          ruim: "Explore maneiras de questionar seus pensamentos automaticamente negativos."
+        },
+        "Emoção": {
+          bom: "Você está lidando bem com suas emoções.",
+          mediano: "Pratique técnicas simples de regulação emocional como respiração profunda.",
+          ruim: "Trabalhe na identificação e regulação de suas emoções."
+        },
+        "Comportamento": {
+          bom: "Suas ações refletem escolhas conscientes e adaptativas.",
+          mediano: "Tente agir de forma pequena e gradual, mesmo quando ansioso ou desmotivado.",
+          ruim: "Considere agir mesmo quando amedrontado ou desmotivado."
+        },
+        "Saúde física": {
+          bom: "Você cuida bem do seu bem-estar físico.",
+          mediano: "Aumente gradualmente seus hábitos de atividade física, sono e nutrição.",
+          ruim: "Invista mais em atividade física, sono e nutrição."
+        }
+      };
+
+      if (percentual >= 75) {
+        return feedbacks[indicador].bom;
+      }
+      if (percentual >= 50) {
+        return feedbacks[indicador].mediano;
+      }
+      return feedbacks[indicador].ruim;
+    }
+
+    function contarTiposDeResposta() {
+      return state.respostasTipos.reduce((contagem, tipo) => {
+        if (Object.prototype.hasOwnProperty.call(contagem, tipo)) {
+          contagem[tipo] += 1;
+        }
+        return contagem;
+      }, {
+        adaptativo: 0,
+        parcial: 0,
+        desadaptativo: 0
+      });
+    }
+
+    function obterResumoPerfil(resultado, contagem) {
+      const perfis = [
+        {
+          indicador: "Pensamento",
+          titulo: "🧠 Perfil Autocrítico",
+          analise: "Você tende a ser muito crítico consigo mesmo, questionando suas decisões e pensamentos de forma intensa. Isso pode criar uma barreira para a ação. Desafie pensamentos negativos automáticos e reconheça seus pontos positivos."
+        },
+        {
+          indicador: "Comportamento",
+          titulo: "🚀 Perfil Evitador",
+          analise: "Você frequentemente evita enfrentar situações desafiadoras, preferindo ficar na zona de conforto. O crescimento acontece quando nos desafiamos. Comece com pequenas ações apesar do medo ou desmotivação."
+        },
+        {
+          indicador: "Saúde física",
+          titulo: "💪 Perfil Sobrecarregado",
+          analise: "Você pode estar negligenciando seu bem-estar físico, o que afeta sua energia mental e emocional. Corpo e mente estão conectados. Priorize sono, atividade física e nutrição como base para melhorar outros aspectos."
+        }
+      ];
+
+      const perfisOrdenados = [...perfis].sort((a, b) => resultado.percentuais[a.indicador] - resultado.percentuais[b.indicador]);
+      const perfil = perfisOrdenados.find((item) => resultado.percentuais[item.indicador] < 50) || perfisOrdenados[0];
+      const resumoEscolhas = "Você fez " + contagem.adaptativo + " escolhas adaptativas, " + contagem.parcial + " escolhas parcialmente desadaptativas e " + contagem.desadaptativo + " escolhas desadaptativas.";
+
+      return {
+        titulo: perfil.titulo,
+        conteudo: resumoEscolhas + "\n\n" + perfil.analise,
+        acao: "Lembre-se: mudança pequena e consistente leva a transformação grande."
+      };
+    }
+
+    function calcularResultados() {
+      const maximos = {
+        "Pensamento": 0,
+        "Saúde física": 0,
+        "Emoção": 0,
+        "Comportamento": 0
+      };
+
+      cartas.forEach((carta) => {
+        carta.indicadores.forEach((indicador) => {
+          if (Object.prototype.hasOwnProperty.call(maximos, indicador)) {
+            maximos[indicador] += 2;
+          }
+        });
+      });
+
+      const percentuais = {};
+      RESULT_ORDER.forEach((indicador) => {
+        const maximo = maximos[indicador] || 0;
+        const obtido = state.pontuacoes[indicador] || 0;
+        percentuais[indicador] = maximo > 0 ? Math.round((obtido / maximo) * 100) : 0;
+      });
+
+      const media = Math.round(RESULT_ORDER.reduce((acc, indicador) => acc + percentuais[indicador], 0) / RESULT_ORDER.length);
+      return { maximos, percentuais, media };
+    }
+
+    function calcularIndicadores(resultado) {
+      return {
+        p: resultado.percentuais["Pensamento"] || 0,
+        e: resultado.percentuais["EmoÃ§Ã£o"] || 0,
+        c: resultado.percentuais["Comportamento"] || 0,
+        s: resultado.percentuais["SaÃºde fÃ­sica"] || 0
+      };
+    }
+
+    async function salvarResultadoSala(resultado) {
+      if (!salaAtual || resultadoSalaSalvo) {
+        return;
+      }
+
+      const indicadores = calcularIndicadores(resultado);
+      const nick = estudanteNome || "";
+
+      try {
+        const response = await fetch(`${BACKEND_URL}/api/sessoes/salvar`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            salaId: salaAtual.id,
+            indicadores,
+            nick
+          })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.sucesso) {
+          window.alert("Não foi possível salvar o resultado: " + (data.erro || "erro desconhecido"));
+          return;
+        }
+
+        resultadoSalaSalvo = true;
+        const nomeSala = salaAtual.nome;
+        limparVinculoSala();
+        window.alert(`Seu resultado foi salvo na turma "${nomeSala}".`);
+      } catch (err) {
+        console.error("[JOGO] Erro ao salvar resultado da sala:", err);
+        window.alert("Erro de conexão ao salvar resultado. O relatório individual continua disponível.");
+      }
+    }
+
+    async function sincronizarResultadoFirebase(resultado, contagemTipos, classificacaoGeral, resumoPerfil) {
+      if (!window.EquilibrioFirebase || typeof window.EquilibrioFirebase.salvarResultadoJogo !== "function") {
+        return;
+      }
+
+      const payload = {
+        pontuacoes: { ...state.pontuacoes },
+        percentuais: { ...resultado.percentuais },
+        media: resultado.media,
+        classificacao: classificacaoGeral,
+        contagem_respostas: { ...contagemTipos },
+        combo_maximo: comboMaximo,
+        perfil_titulo: resumoPerfil.titulo,
+        total_cartas: cartas.length
+      };
+
+      try {
+        await window.EquilibrioFirebase.salvarResultadoJogo(payload);
+      } catch (err) {
+        console.warn("[Firebase] Não foi possível sincronizar resultado:", err);
+      }
+    }
+
+    function embaralhar(lista) {
+      const copia = [...lista];
+      for (let i = copia.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        const temp = copia[i];
+        copia[i] = copia[j];
+        copia[j] = temp;
+      }
+      return copia;
+    }
+
+    function mostrarTelaJogo() {
+      document.body.classList.add("game-started");
+      fecharMenuNavegacao();
+      el.startScreen.classList.add("is-hidden");
+      el.gameScreen.classList.remove("is-hidden");
+    }
+
+    function iniciarJornada() {
+      state.indiceAtual = 0;
+      state.respondeu = false;
+      state.mostrandoCartaComoJogar = true;
+      state.pontuacoes = {
+        "Pensamento": 0,
+        "EmoÃ§Ã£o": 0,
+        "Comportamento": 0,
+        "SaÃºde fÃ­sica": 0
+      };
+      state.respostasTipos = [];
+      resultadoSalaSalvo = false;
+      jogoIniciadoEmSala = Boolean(salaAtual);
+      comboAtual = 0;
+      comboMaximo = 0;
+      comboInterrompidoJaExibiu = false;
+      mostrarTelaJogo();
+      window.setTimeout(() => {
+        renderCartaComoJogar();
+      }, 80);
+    }
+
+    function fecharMenuNavegacao() {
+      if (el.navList && el.navbarToggle) {
+        el.navList.classList.remove("active");
+        el.navbarToggle.setAttribute("aria-expanded", "false");
+      }
+    }
+
+    function definirAbaSobre(modal, nomeAba) {
+      if (!modal) {
+        return;
+      }
+
+      const tabs = modal.querySelectorAll(".about-tab");
+      const contents = modal.querySelectorAll(".about-content");
+
+      tabs.forEach((tab) => {
+        const isActive = tab.getAttribute("data-tab") === nomeAba;
+        tab.classList.toggle("is-active", isActive);
+      });
+
+      contents.forEach((content) => {
+        const isActive = content.getAttribute("data-content") === nomeAba;
+        content.hidden = !isActive;
+      });
+    }
+
+    function criarModalSobre() {
+      const overlay = document.createElement("div");
+      overlay.className = "about-modal-overlay";
+      overlay.setAttribute("role", "dialog");
+      overlay.setAttribute("aria-modal", "true");
+      overlay.setAttribute("aria-label", "Sobre o Jogo");
+
+      overlay.innerHTML = `
+        <section class="about-modal-card">
+          <header class="about-modal-header">
+            <h2 class="about-modal-title">Sobre o Jogo</h2>
+            <button class="about-modal-close" type="button" aria-label="Fechar">✕</button>
+          </header>
+
+          <div class="about-tabs">
+            <button class="about-tab is-active" data-tab="sobre" type="button">Sobre</button>
+            <button class="about-tab" data-tab="como" type="button">Como Jogar</button>
+            <button class="about-tab" data-tab="mecanicas" type="button">Mecânicas</button>
+          </div>
+
+          <div class="about-content" data-content="sobre">
+            <p>O EQUILÍBRIO é uma ferramenta psicoeducativa. Você passa por situações do cotidiano e recebe feedback sobre suas escolhas. A ideia é mostrar que a saúde mental se constrói com pequenas decisões ao longo do tempo.</p>
+            <p>O jogo usa princípios da Terapia Cognitivo-Comportamental, a TCC. Ele não faz diagnóstico e não substitui avaliação clínica profissional.</p>
+          </div>
+
+          <div class="about-content" data-content="como" hidden>
+            <div class="about-item">
+              <span class="about-item-title">🃏 Receba uma carta</span>
+              <div>Uma situação do dia a dia de um estudante será apresentada.</div>
+            </div>
+            <div class="about-item">
+              <span class="about-item-title">🤔 Escolha sua resposta</span>
+              <div>Escolha uma entre 3 alternativas, a que mais combina com como você reagiria.</div>
+            </div>
+            <div class="about-item">
+              <span class="about-item-title">💬 Leia o feedback</span>
+              <div>Depois de cada escolha, você recebe um microfeedback explicando o impacto daquela resposta.</div>
+            </div>
+            <div class="about-item">
+              <span class="about-item-title">📊 Veja seu panorama</span>
+              <div>No fim das 12 cartas, você vê seus padrões em 4 áreas: Pensamento, Emoção, Comportamento e Saúde física.</div>
+            </div>
+          </div>
+
+          <div class="about-content" data-content="mecanicas" hidden>
+            <div class="about-item">
+              <span class="about-item-title">🔥 Sistema de Sequência</span>
+              <div>Respostas saudáveis seguidas aumentam sua sequência. Respostas parcialmente saudáveis mantêm a sequência quando ela já chegou a 3. Respostas que podem melhorar interrompem a sequência. Chegue a 3, 5 ou 7 para liberar animações especiais.</div>
+            </div>
+            <div class="about-item">
+              <span class="about-item-title">🧠 4 Indicadores</span>
+              <div>Cada carta afeta um ou dois indicadores: Pensamento, Emoção, Comportamento ou Saúde física. A borda colorida da carta mostra qual área está em foco. No fim, você vê seu desempenho em cada uma separadamente.</div>
+            </div>
+            <div class="about-item">
+              <span class="about-item-title">💡 Microfeedback Psicoeducativo</span>
+              <div>Depois de cada resposta, o jogo traz uma explicação baseada na TCC sobre o impacto da sua escolha. O objetivo não é acertar ou errar. O foco é refletir sobre seus padrões.</div>
+            </div>
+          </div>
+        </section>
+      `;
+
+      return overlay;
+    }
+
+    function fecharModalSobre() {
+      if (!aboutModalOverlay || aboutModalOverlay.classList.contains("is-closing")) {
+        return;
+      }
+
+      const overlayAtual = aboutModalOverlay;
+      overlayAtual.classList.add("is-closing");
+
+      window.setTimeout(() => {
+        document.removeEventListener("keydown", overlayAtual._onEscape);
+        if (overlayAtual.parentNode) {
+          overlayAtual.parentNode.removeChild(overlayAtual);
+        }
+        if (aboutModalOverlay === overlayAtual) {
+          aboutModalOverlay = null;
+        }
+      }, 200);
+    }
+
+    function abrirModalSobre() {
+      if (aboutModalOverlay) {
+        definirAbaSobre(aboutModalOverlay, "sobre");
+        return;
+      }
+
+      const overlay = criarModalSobre();
+      document.body.appendChild(overlay);
+      aboutModalOverlay = overlay;
+
+      definirAbaSobre(overlay, "sobre");
+
+      const tabs = overlay.querySelectorAll(".about-tab");
+      tabs.forEach((tab) => {
+        tab.addEventListener("click", () => {
+          definirAbaSobre(overlay, tab.getAttribute("data-tab"));
+        });
+      });
+
+      const closeBtn = overlay.querySelector(".about-modal-close");
+      closeBtn.addEventListener("click", fecharModalSobre);
+
+      overlay.addEventListener("click", (event) => {
+        if (event.target === overlay) {
+          fecharModalSobre();
+        }
+      });
+
+      overlay._onEscape = (event) => {
+        if (event.key === "Escape") {
+          fecharModalSobre();
+        }
+      };
+      document.addEventListener("keydown", overlay._onEscape);
+
+      window.requestAnimationFrame(() => {
+        overlay.classList.add("is-open");
+      });
+    }
+
+    function obterEstiloIndicador(indicador) {
+      return INDICATOR_STYLE[indicador] || INDICATOR_STYLE["Pensamento"];
+    }
+
+    function renderIndicadores(indicadores) {
+      const colunas = el.indicatorGrid.querySelectorAll(".indicator-column");
+      colunas.forEach((coluna) => {
+        const nome = coluna.getAttribute("data-indicator");
+        const ativo = indicadores.includes(nome);
+        coluna.classList.toggle("is-active", ativo);
+      });
+    }
+
+    function textoSequenciaCombo(valor) {
+      if (valor === 3) {
+        return "🔥 3 escolhas saudáveis seguidas. Você começou uma boa sequência.";
+      }
+      if (valor === 4) {
+        return "🔥 4 seguidas. Você está ganhando consistência.";
+      }
+      if (valor === 5) {
+        return "🔥 5 seguidas. Seu ritmo está muito bom.";
+      }
+      if (valor === 6) {
+        return "🔥 6 seguidas. Continue nesse caminho.";
+      }
+      if (valor === 7) {
+        return "🔥 7 seguidas. Você está imparável.";
+      }
+      return "🔥 " + valor + " seguidas. Sequência incrível.";
+    }
+
+    function limparComboVisual() {
+      el.comboBox.classList.remove("show", "combo-active", "combo-break");
+      el.comboText.textContent = "";
+    }
+
+    function exibirComboSequencia(valor) {
+      limparComboVisual();
+      el.comboBox.classList.add("combo-active");
+      el.comboText.textContent = textoSequenciaCombo(valor);
+      window.setTimeout(() => {
+        el.comboBox.classList.add("show");
+      }, 200);
+    }
+
+    function exibirComboInterrompido() {
+      limparComboVisual();
+      el.comboBox.classList.add("combo-break");
+      el.comboText.textContent = "Sua sequência foi interrompida. Tudo bem, você pode retomar agora. 🔥";
+      window.setTimeout(() => {
+        el.comboBox.classList.add("show");
+      }, 200);
+    }
+
+    function dispararAnimacaoCombo(valorCombo) {
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        return;
+      }
+
+      const config = {
+        3: { emoji: 48, titulo: "Sequência iniciada!", subtitulo: "3 escolhas saudáveis seguidas" },
+        5: { emoji: 56, titulo: "Você está em chamas!", subtitulo: "5 escolhas saudáveis seguidas" },
+        7: { emoji: 64, titulo: "Imparável!", subtitulo: "7 escolhas saudáveis seguidas" }
+      }[valorCombo];
+
+      if (!config) {
+        return;
+      }
+
+      const flash = document.createElement("div");
+      flash.style.position = "fixed";
+      flash.style.top = "0";
+      flash.style.left = "0";
+      flash.style.width = "100%";
+      flash.style.height = "100%";
+      flash.style.pointerEvents = "none";
+      flash.style.zIndex = "9997";
+      flash.style.background = "radial-gradient(circle at center, rgba(232, 160, 32, 0.15) 0%, transparent 70%)";
+      flash.style.opacity = "0";
+      flash.style.transition = "opacity 200ms ease";
+      document.body.appendChild(flash);
+      requestAnimationFrame(() => {
+        flash.style.opacity = "1";
+      });
+      setTimeout(() => {
+        flash.style.opacity = "0";
+      }, 200);
+      setTimeout(() => {
+        flash.remove();
+      }, 800);
+
+      const overlay = document.createElement("div");
+      overlay.style.position = "fixed";
+      overlay.style.top = "50%";
+      overlay.style.left = "50%";
+      overlay.style.transform = "translate(-50%, -50%)";
+      overlay.style.display = "flex";
+      overlay.style.flexDirection = "column";
+      overlay.style.alignItems = "center";
+      overlay.style.gap = "8px";
+      overlay.style.pointerEvents = "none";
+      overlay.style.zIndex = "9999";
+      overlay.style.background = "rgba(255, 251, 234, 0.92)";
+      overlay.style.borderRadius = "20px";
+      overlay.style.padding = "24px 32px";
+      overlay.style.border = "1.5px solid rgba(232, 160, 32, 0.4)";
+      overlay.style.boxShadow = "0 8px 32px rgba(232, 160, 32, 0.2)";
+      overlay.style.opacity = "0";
+      overlay.style.transition = "opacity 200ms ease";
+
+      const emoji = document.createElement("div");
+      emoji.textContent = "🔥";
+      emoji.style.fontSize = config.emoji + "px";
+      emoji.style.lineHeight = "1";
+
+      const titulo = document.createElement("div");
+      titulo.textContent = config.titulo;
+      titulo.style.fontSize = "20px";
+      titulo.style.fontWeight = "700";
+      titulo.style.color = "#854F0B";
+      titulo.style.opacity = "0";
+
+      const subtitulo = document.createElement("div");
+      subtitulo.textContent = config.subtitulo;
+      subtitulo.style.fontSize = "14px";
+      subtitulo.style.fontWeight = "500";
+      subtitulo.style.color = "#E8A020";
+      subtitulo.style.opacity = "0";
+
+      overlay.appendChild(emoji);
+      overlay.appendChild(titulo);
+      overlay.appendChild(subtitulo);
+      document.body.appendChild(overlay);
+
+      requestAnimationFrame(() => {
+        overlay.style.opacity = "1";
+        emoji.animate(
+          [
+            { transform: "scale(0.3)" },
+            { transform: "scale(1.4)", offset: 0.6 },
+            { transform: "scale(1)" }
+          ],
+          { duration: 500, easing: "cubic-bezier(0.34, 1.56, 0.64, 1)", fill: "forwards" }
+        );
+
+        setTimeout(() => {
+          titulo.style.transition = "opacity 300ms ease";
+          titulo.style.opacity = "1";
+        }, 200);
+
+        setTimeout(() => {
+          subtitulo.style.transition = "opacity 300ms ease";
+          subtitulo.style.opacity = "1";
+        }, 350);
+      });
+
+      setTimeout(() => {
+        overlay.style.transition = "opacity 800ms ease";
+        overlay.style.opacity = "0";
+      }, 2200);
+
+      setTimeout(() => {
+        overlay.remove();
+      }, 3000);
+
+      const iconesParticula = ["🔥", "🔶", "✨"];
+      for (let i = 0; i < 12; i += 1) {
+        const p = document.createElement("div");
+        p.textContent = iconesParticula[Math.floor(Math.random() * iconesParticula.length)];
+        p.style.position = "fixed";
+        p.style.pointerEvents = "none";
+        p.style.zIndex = "9998";
+        p.style.left = (40 + Math.random() * 20) + "%";
+        p.style.top = (40 + Math.random() * 20) + "%";
+        p.style.fontSize = (16 + Math.random() * 16) + "px";
+        p.style.opacity = "1";
+        document.body.appendChild(p);
+
+        const tx = -120 + Math.random() * 240;
+        const ty = -200 + Math.random() * 220;
+        const rot = -30 + Math.random() * 60;
+        const dur = 1200 + Math.random() * 800;
+
+        p.animate(
+          [
+            { transform: "translate(0, 0) rotate(0deg)", opacity: 1 },
+            { transform: "translate(" + tx + "px, " + ty + "px) rotate(" + rot + "deg)", opacity: 0 }
+          ],
+          { duration: dur, easing: "ease-out", fill: "forwards" }
+        );
+
+        setTimeout(() => {
+          p.remove();
+        }, 3000);
+      }
+    }
+
+    function resetFeedback() {
+      el.microfeedback.classList.remove("show");
+      el.microfeedback.style.background = "transparent";
+      el.microfeedback.style.borderLeftColor = "transparent";
+      el.feedbackBadge.style.background = "transparent";
+      el.feedbackBadge.style.color = "inherit";
+      el.feedbackTypeLabel.textContent = "";
+      el.feedbackText.textContent = "";
+      el.nextBtn.classList.remove("show");
+      limparComboVisual();
+    }
+
+    function renderCarta() {
+      const total = cartas.length;
+      const atual = state.indiceAtual;
+
+      if (atual >= total) {
+        transicaoParaResultados();
+        return;
+      }
+
+      state.respondeu = false;
+      el.gameShell.classList.remove("fade-out");
+      el.summary.hidden = true;
+      el.summary.classList.remove("show");
+      el.restartBtn.hidden = false;
+      el.nextBtn.classList.remove("show");
+      el.options.hidden = false;
+      el.card.hidden = false;
+      el.gameHeader.hidden = false;
+      el.indicatorGrid.hidden = false;
+
+      const carta = cartas[atual];
+      const principal = carta.indicadores[0];
+      const principalStyle = obterEstiloIndicador(principal);
+
+      el.card.classList.remove("is-intro-card");
+      el.nextBtn.textContent = "Próxima carta →";
+      el.progressText.textContent = "CARTA " + (atual + 1) + " DE " + total;
+
+      renderIndicadores(carta.indicadores);
+
+      el.card.style.borderColor = principalStyle.color;
+      el.situationText.textContent = carta.situacao;
+      el.contextText.textContent = carta.contexto || "";
+
+      resetFeedback();
+      renderOpcoes(carta);
+    }
+
+    function renderCartaComoJogar() {
+      state.respondeu = false;
+      el.gameShell.classList.remove("fade-out");
+      el.summary.hidden = true;
+      el.summary.classList.remove("show");
+      el.restartBtn.hidden = false;
+      el.nextBtn.classList.remove("show");
+      el.options.hidden = true;
+      el.card.hidden = false;
+      el.gameHeader.hidden = false;
+      el.indicatorGrid.hidden = false;
+
+      el.progressText.textContent = "ANTES DE COMEÇAR";
+      renderIndicadores([]);
+
+      el.card.classList.add("is-intro-card");
+      el.card.style.borderColor = "#1D9E75";
+      el.contextText.textContent = "COMO JOGAR";
+      el.situationText.innerHTML = `
+        <p class="howto-lead">Você vai passar por 12 cartas com situações do dia a dia. Em cada carta, escolha a resposta que mais parece com o que você faria e leia o microfeedback.</p>
+        <ul class="howto-response-list">
+          <li class="howto-response-item"><span class="howto-type adaptativo">Adaptativa (+2)</span>: indica uma escolha mais saudável para lidar com a situação.</li>
+          <li class="howto-response-item"><span class="howto-type parcial">Parcialmente desadaptativa (+1)</span>: tem algo positivo, mas ainda pode ser ajustada.</li>
+          <li class="howto-response-item"><span class="howto-type desadaptativo">Desadaptativa (0)</span>: tende a piorar o impacto emocional no momento.</li>
+        </ul>
+        <p class="howto-end">No final, você recebe seu panorama em Pensamento, Emoção, Comportamento e Saúde física.</p>
+      `;
+
+      resetFeedback();
+      el.options.innerHTML = "";
+      el.nextBtn.textContent = "Iniciar Jornada";
+      el.nextBtn.classList.add("show");
+    }
+
+    function transicaoParaResultados() {
+      el.gameShell.classList.add("fade-out");
+      window.setTimeout(() => {
+        renderResumoFinal();
+        el.gameShell.classList.remove("fade-out");
+      }, 300);
+    }
+
+    function renderOpcoes(carta) {
+      el.options.innerHTML = "";
+
+      const opcoes = embaralhar(carta.opcoes);
+      opcoes.forEach((opcao) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "option-btn";
+        btn.textContent = opcao.texto;
+        btn.addEventListener("click", () => selecionarOpcao(carta, opcao, btn));
+        el.options.appendChild(btn);
+      });
+    }
+
+    function aplicarPontuacao(carta, pontos) {
+      carta.indicadores.forEach((indicador) => {
+        if (Object.prototype.hasOwnProperty.call(state.pontuacoes, indicador)) {
+          state.pontuacoes[indicador] += pontos;
+        }
+      });
+    }
+
+    function selecionarOpcao(carta, opcaoEscolhida, botaoEscolhido) {
+      if (state.respondeu) {
+        return;
+      }
+
+      state.respondeu = true;
+      aplicarPontuacao(carta, opcaoEscolhida.pontos);
+      state.respostasTipos.push(opcaoEscolhida.tipo);
+
+      let mostrarComboInterrupcao = false;
+
+      if (opcaoEscolhida.tipo === "adaptativo") {
+        comboAtual += 1;
+        if (comboAtual > comboMaximo) {
+          comboMaximo = comboAtual;
+        }
+        if (comboAtual === 3 || comboAtual === 5 || comboAtual === 7) {
+          dispararAnimacaoCombo(comboAtual);
+        }
+      } else if (opcaoEscolhida.tipo === "parcial") {
+        if (comboAtual < 3) {
+          comboAtual = 0;
+        }
+      } else {
+        if (comboAtual >= 3 && comboInterrompidoJaExibiu === false) {
+          mostrarComboInterrupcao = true;
+          comboInterrompidoJaExibiu = true;
+        }
+        comboAtual = 0;
+      }
+
+      const style = RESPONSE_STYLE[opcaoEscolhida.tipo];
+      botaoEscolhido.style.background = style.bg;
+      botaoEscolhido.style.borderColor = style.border;
+      botaoEscolhido.style.color = style.text;
+
+      const botoes = el.options.querySelectorAll(".option-btn");
+      botoes.forEach((btn) => {
+        if (btn !== botaoEscolhido) {
+          btn.classList.add("is-dimmed");
+        }
+      });
+
+      el.microfeedback.style.background = style.bg;
+      el.microfeedback.style.borderLeftColor = style.border;
+      el.microfeedback.style.color = style.text;
+
+      el.feedbackBadge.style.background = "transparent";
+      el.feedbackBadge.style.color = style.text;
+      if (opcaoEscolhida.tipo === "adaptativo") {
+        el.feedbackTypeLabel.textContent = "✓ Resposta adaptativa (+2)";
+      } else if (opcaoEscolhida.tipo === "parcial") {
+        el.feedbackTypeLabel.textContent = "~ Resposta parcialmente desadaptativa (+1)";
+      } else {
+        el.feedbackTypeLabel.textContent = "✕ Resposta desadaptativa (0)";
+      }
+      el.feedbackText.textContent = opcaoEscolhida.feedback;
+      el.microfeedback.classList.add("show");
+
+      if (mostrarComboInterrupcao) {
+        exibirComboInterrompido();
+      } else if (comboAtual >= 3) {
+        exibirComboSequencia(comboAtual);
+      } else {
+        limparComboVisual();
+      }
+
+      window.setTimeout(() => {
+        el.nextBtn.classList.add("show");
+      }, 400);
+    }
+
+    function renderResumoFinal() {
+      const resultado = calcularResultados();
+      const classificacaoGeral = classificarGeral(resultado.media);
+
+      el.card.hidden = true;
+      el.options.hidden = true;
+      el.nextBtn.classList.remove("show");
+      el.summary.hidden = false;
+      el.gameHeader.hidden = true;
+      el.indicatorGrid.hidden = true;
+      el.restartBtn.hidden = jogoIniciadoEmSala;
+
+      el.progressText.textContent = "CARTA 12 DE 12";
+      renderIndicadores([]);
+
+      el.journeyText.textContent = textoSaudacao(classificacaoGeral);
+      if (comboMaximo >= 3) {
+        el.comboSummaryText.hidden = false;
+        el.comboSummaryText.textContent = "🔥 Sua maior sequência foi de " + comboMaximo + " escolhas saudáveis seguidas.";
+      } else {
+        el.comboSummaryText.hidden = true;
+        el.comboSummaryText.textContent = "";
+      }
+
+      const contagemTipos = contarTiposDeResposta();
+      const resumoPerfil = obterResumoPerfil(resultado, contagemTipos);
+
+      if (salaAtual) {
+        salvarResultadoSala(resultado);
+      }
+
+      el.profileSummaryTitle.textContent = resumoPerfil.titulo;
+      el.profileSummaryContent.textContent = resumoPerfil.conteudo;
+      el.profileSummaryAction.textContent = resumoPerfil.acao;
+
+      el.panoramaList.innerHTML = "";
+      const fillsParaAnimar = [];
+      RESULT_ORDER.forEach((indicador) => {
+        const percentual = resultado.percentuais[indicador];
+        const status = classificarIndicador(percentual);
+        const meta = RESULT_META[indicador];
+
+        const row = document.createElement("div");
+        row.className = "panorama-row";
+
+        const label = document.createElement("div");
+        label.className = "panorama-label";
+        label.textContent = meta.emoji + " " + indicador;
+
+        const track = document.createElement("div");
+        track.className = "panorama-track";
+
+        const fill = document.createElement("div");
+        fill.className = "panorama-fill";
+        fill.style.background = meta.color;
+        fill.style.width = "0%";
+        track.appendChild(fill);
+
+        const statusText = document.createElement("div");
+        statusText.className = "panorama-status";
+        statusText.textContent = status.simbolo + " " + status.texto + " · " + percentual + "%";
+        statusText.style.color = status.cor === "indicador" ? meta.color : status.cor;
+
+        const microfeedback = document.createElement("div");
+        microfeedback.className = "panorama-microfeedback";
+        microfeedback.textContent = obterMicrofeedbackPanorama(indicador, percentual);
+
+        row.appendChild(label);
+        row.appendChild(track);
+        row.appendChild(statusText);
+        row.appendChild(microfeedback);
+        el.panoramaList.appendChild(row);
+
+        fillsParaAnimar.push({ fill, percentual });
+      });
+
+      const asc = [...RESULT_ORDER].sort((a, b) => resultado.percentuais[a] - resultado.percentuais[b]);
+
+      const menorDois = [];
+      asc.forEach((indicador) => {
+        if (menorDois.length < 2 && !menorDois.includes(indicador)) {
+          menorDois.push(indicador);
+        }
+      });
+
+      el.reflectionList.innerHTML = "";
+      menorDois.forEach((indicador) => {
+        const item = document.createElement("div");
+        item.className = "reflection-item";
+
+        const dot = document.createElement("span");
+        dot.className = "reflection-dot";
+        dot.setAttribute("aria-hidden", "true");
+
+        const text = document.createElement("span");
+        text.className = "reflection-text";
+        text.textContent = RESULT_META[indicador].dica;
+
+        item.appendChild(dot);
+        item.appendChild(text);
+        el.reflectionList.appendChild(item);
+      });
+
+      const itemAjuda = document.createElement("div");
+      itemAjuda.className = "reflection-item";
+      const dotAjuda = document.createElement("span");
+      dotAjuda.className = "reflection-dot";
+      dotAjuda.setAttribute("aria-hidden", "true");
+      const textAjuda = document.createElement("span");
+      textAjuda.className = "reflection-text";
+      textAjuda.textContent = "Pedir ajuda é um ato de coragem. Se precisar, procure um psicólogo. A psicoterapia é um caminho valioso de autocuidado.";
+      itemAjuda.appendChild(dotAjuda);
+      itemAjuda.appendChild(textAjuda);
+      el.reflectionList.appendChild(itemAjuda);
+
+      el.summary.classList.remove("show");
+      void el.summary.offsetWidth;
+      window.setTimeout(() => {
+        el.summary.classList.add("show");
+      }, 10);
+
+      window.setTimeout(() => {
+        fillsParaAnimar.forEach(({ fill, percentual }) => {
+          fill.style.width = percentual + "%";
+        });
+      }, 400);
+    }
+
+    function reiniciarJogo() {
+      state.indiceAtual = 0;
+      state.respondeu = false;
+      state.mostrandoCartaComoJogar = true;
+      state.pontuacoes = {
+        "Pensamento": 0,
+        "Emoção": 0,
+        "Comportamento": 0,
+        "Saúde física": 0
+      };
+      state.respostasTipos = [];
+      resultadoSalaSalvo = false;
+      jogoIniciadoEmSala = Boolean(salaAtual);
+      comboAtual = 0;
+      comboMaximo = 0;
+      comboInterrompidoJaExibiu = false;
+      if (!el.summary.hidden) {
+        el.summary.classList.remove("show");
+        el.gameShell.classList.add("fade-out");
+        window.setTimeout(() => {
+          el.summary.hidden = true;
+          renderCartaComoJogar();
+          window.requestAnimationFrame(() => {
+            el.gameShell.classList.remove("fade-out");
+          });
+        }, 300);
+      } else {
+        renderCartaComoJogar();
+      }
+    }
+
+    function voltarAoInicio() {
+      state.indiceAtual = 0;
+      state.respondeu = false;
+      state.mostrandoCartaComoJogar = false;
+      state.pontuacoes = {
+        "Pensamento": 0,
+        "EmoÃ§Ã£o": 0,
+        "Comportamento": 0,
+        "SaÃºde fÃ­sica": 0
+      };
+      state.respostasTipos = [];
+      resultadoSalaSalvo = false;
+      jogoIniciadoEmSala = false;
+      comboAtual = 0;
+      comboMaximo = 0;
+      comboInterrompidoJaExibiu = false;
+      document.body.classList.remove("game-started");
+      fecharMenuNavegacao();
+      limparComboVisual();
+      el.summary.hidden = true;
+      el.summary.classList.remove("show");
+      el.restartBtn.hidden = false;
+      el.gameScreen.classList.add("is-hidden");
+      el.startScreen.classList.remove("is-hidden");
+      el.card.hidden = false;
+      el.options.hidden = false;
+      el.nextBtn.classList.remove("show");
+      el.gameHeader.hidden = false;
+      el.indicatorGrid.hidden = false;
+    }
+
+    el.navbarToggle.addEventListener("click", () => {
+      const isOpen = el.navList.classList.toggle("active");
+      el.navbarToggle.setAttribute("aria-expanded", String(isOpen));
+    });
+
+    el.navList.querySelectorAll("a").forEach((link) => {
+      link.addEventListener("click", fecharMenuNavegacao);
+    });
+
+    inicializarSala();
+
+    el.roomBtn.addEventListener("click", abrirModalSalaJogo);
+
+    el.roomModal.addEventListener("click", (event) => {
+      if (event.target === el.roomModal) {
+        fecharModalSalaJogo();
+      }
+    });
+
+    el.roomCodeInput.addEventListener("input", () => {
+      el.roomCodeInput.value = el.roomCodeInput.value.toUpperCase().replace(/[^A-Z0-9]/g, "");
+      el.roomModalError.textContent = "";
+      el.roomModalError.style.display = "none";
+    });
+
+    el.roomCodeInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        entrarNaSalaJogo();
+      }
+    });
+
+    el.startBtn.addEventListener("click", iniciarJornada);
+
+    el.aboutBtn.addEventListener("click", () => {
+      abrirModalSobre();
+    });
+
+    el.nextBtn.addEventListener("click", () => {
+      if (state.mostrandoCartaComoJogar) {
+        state.mostrandoCartaComoJogar = false;
+        state.indiceAtual = 0;
+        renderCarta();
+        return;
+      }
+
+      if (!state.respondeu) {
+        return;
+      }
+      state.indiceAtual += 1;
+      renderCarta();
+    });
+
+    el.closeBtn.addEventListener("click", () => {
+      if (salaAtual) {
+        abrirModalSaidaSala();
+        return;
+      }
+
+      sairDaTelaDoJogo();
+    });
+
+    el.exitRoomCancelBtn.addEventListener("click", fecharModalSaidaSala);
+    el.exitRoomConfirmBtn.addEventListener("click", confirmarSaidaSala);
+    el.exitRoomModal.addEventListener("click", (event) => {
+      if (event.target === el.exitRoomModal) {
+        fecharModalSaidaSala();
+      }
+    });
+
+    el.restartBtn.addEventListener("click", reiniciarJogo);
+    el.backHomeBtn.addEventListener("click", voltarAoInicio);
+
+    if (salaAtual && sessionStorage.getItem("auto_iniciar_jogo") === "1") {
+      sessionStorage.removeItem("auto_iniciar_jogo");
+      iniciarJornada();
+    }
+  </script>
+</body>
+</html>

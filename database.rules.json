@@ -1,0 +1,13 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "resultados_jogo": {
+      "$resultadoId": {
+        ".read": false,
+        ".write": "!data.exists() && newData.exists()",
+        ".validate": "newData.hasChildren(['pontuacoes', 'percentuais', 'media', 'classificacao', 'contagem_respostas', 'total_cartas', 'data_criacao']) && newData.child('media').isNumber() && newData.child('media').val() >= 0 && newData.child('media').val() <= 100 && newData.child('total_cartas').isNumber() && newData.child('total_cartas').val() > 0"
+      }
+    }
+  }
+}
