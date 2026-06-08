@@ -139,6 +139,11 @@ app.use('/api/analises', analisesRoutes);
 app.get('/health', (req, res) => {
   res.status(200).json({
     status: 'ok',
+    version: {
+      commit: process.env.VERCEL_GIT_COMMIT_SHA || null,
+      env: process.env.VERCEL_ENV || null,
+      region: process.env.VERCEL_REGION || null
+    },
     env: {
       jwtSecret: Boolean(process.env.JWT_SECRET),
       databaseUrl: Boolean(process.env.DATABASE_URL || process.env.FIREBASE_DATABASE_URL),

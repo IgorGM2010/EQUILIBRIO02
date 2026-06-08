@@ -67,7 +67,7 @@ async function criarLoginLocalPadrao(senha) {
 
 router.post('/login', async (req, res) => {
   try {
-    const { nome, senha } = req.body;
+    const { nome, senha } = req.body || {};
 
     if (!nome || !senha) {
       return res.status(400).json({
@@ -260,12 +260,15 @@ router.post('/login', async (req, res) => {
 
     if (err.message && err.message.includes('JWT_SECRET')) {
       return res.status(500).json({
+        codigo: 'CONFIG_JWT',
         erro: 'JWT_SECRET não configurado na Vercel. Adicione essa variável em Settings > Environment Variables e faça redeploy.'
       });
     }
 
     return res.status(500).json({
-      erro: 'Erro interno do servidor'
+      codigo: 'LOGIN_INTERNAL',
+      erro: 'Erro interno do servidor',
+      diagnostico: err.message || 'Erro desconhecido'
     });
   }
 });
