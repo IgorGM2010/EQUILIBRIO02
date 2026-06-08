@@ -4,7 +4,7 @@ Este guia descreve uma publicação segura do EQUILÍBRIO mantendo o Firebase ap
 
 ## Pré-requisitos
 
-- Node.js 18+
+- Node.js 22+
 - npm 8+
 - Conta em uma plataforma para backend Node.js, como Render, Railway ou Vercel
 - Realtime Database criado no Firebase
