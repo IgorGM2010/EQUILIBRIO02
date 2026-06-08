@@ -11,8 +11,11 @@ const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
 const SALT_ROUNDS = 10;
-const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_EXPIRY = '24h';
+
+function obterJwtSecret() {
+  return process.env.JWT_SECRET;
+}
 
 async function hashSenha(senha) {
   if (!senha || typeof senha !== 'string') {
@@ -31,6 +34,8 @@ async function compararSenha(senha, hash) {
 }
 
 function gerarToken(professionalId, nome) {
+  const JWT_SECRET = obterJwtSecret();
+
   if (!JWT_SECRET) {
     throw new Error('JWT_SECRET nao definido no .env');
   }
@@ -54,6 +59,8 @@ function verificarToken(token) {
   if (!token) {
     return null;
   }
+
+  const JWT_SECRET = obterJwtSecret();
 
   if (!JWT_SECRET) {
     console.error('JWT_SECRET nao definido');

@@ -258,6 +258,12 @@ router.post('/login', async (req, res) => {
   } catch (err) {
     console.error('[ERRO /login]:', err.message);
 
+    if (err.message && err.message.includes('JWT_SECRET')) {
+      return res.status(500).json({
+        erro: 'JWT_SECRET não configurado na Vercel. Adicione essa variável em Settings > Environment Variables e faça redeploy.'
+      });
+    }
+
     return res.status(500).json({
       erro: 'Erro interno do servidor'
     });

@@ -139,6 +139,11 @@ app.use('/api/analises', analisesRoutes);
 app.get('/health', (req, res) => {
   res.status(200).json({
     status: 'ok',
+    env: {
+      jwtSecret: Boolean(process.env.JWT_SECRET),
+      databaseUrl: Boolean(process.env.DATABASE_URL || process.env.FIREBASE_DATABASE_URL),
+      nodeEnv: process.env.NODE_ENV || null
+    },
     timestamp: Date.now()
   });
 });
