@@ -16,6 +16,8 @@ require('dotenv').config();
 const app = express();
 const frontendDir = path.resolve(__dirname, '..', '..');
 
+app.set('trust proxy', 1);
+
 const allowedFrontendUrl = process.env.FRONTEND_URL || '';
 const localOriginRegex = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/;
 
