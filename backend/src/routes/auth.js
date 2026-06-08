@@ -265,6 +265,21 @@ router.post('/login', async (req, res) => {
       });
     }
 
+    if (
+      err.message &&
+      (
+        err.message.includes('invalid-credential') ||
+        err.message.includes('Credential implementation') ||
+        err.message.includes('Could not load the default credentials')
+      )
+    ) {
+      return res.status(503).json({
+        codigo: 'CONFIG_FIREBASE_ADMIN',
+        erro: 'Firebase Admin sem credenciais no backend. Configure uma conta de serviço ou use o login local do profissional.',
+        diagnostico: err.message
+      });
+    }
+
     return res.status(500).json({
       codigo: 'LOGIN_INTERNAL',
       erro: 'Erro interno do servidor',

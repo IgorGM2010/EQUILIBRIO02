@@ -387,7 +387,13 @@
           : { erro: `Resposta inválida do backend (${response.status}). Verifique /health e /api/auth/login no deploy.` };
 
         if (!response.ok || !data.sucesso) {
-          showMessage(data.erro || "Erro ao fazer login.", "error");
+          const detalhes = [data.codigo, data.diagnostico]
+            .filter(Boolean)
+            .join(" - ");
+          const mensagem = detalhes
+            ? `${data.erro || "Erro ao fazer login."} (${detalhes})`
+            : (data.erro || "Erro ao fazer login.");
+          showMessage(mensagem, "error");
           return;
         }
 
