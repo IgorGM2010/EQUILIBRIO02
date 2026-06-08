@@ -282,7 +282,7 @@ router.post('/login', async (req, res) => {
 
     return res.status(500).json({
       codigo: 'LOGIN_INTERNAL',
-      erro: 'Erro interno do servidor',
+      erro: `Erro interno do servidor: ${err.message || 'Erro desconhecido'}`,
       diagnostico: err.message || 'Erro desconhecido'
     });
   }
